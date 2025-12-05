@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="UniversalAnalogInputUI.Controls.MappingsListControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:UniversalAnalogInputUI.Models"
+    xmlns:helpers="using:UniversalAnalogInputUI.Helpers">
+
+    <UserControl.Resources>
+        <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Mappings Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Key Mappings" Style="{StaticResource TitleTextBlockStyle}"
+                      VerticalAlignment="Center" Margin="0,0,15,0"/>
+            <Button Grid.Column="1" x:Name="AddMappingButton" Style="{StaticResource AccentButtonStyle}"
+                   Click="AddMappingButton_Click" Margin="0,0,10,0">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE710;" FontSize="12"/>
+                    <TextBlock Text="Add Mapping" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <!-- Multi-Selection Buttons -->
+            <Border Grid.Column="3" Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                   CornerRadius="4" Padding="8,4"
+                   Opacity="0" Visibility="Collapsed" x:Name="SelectionButtonsContainer"
+                   RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <CompositeTransform x:Name="SelectionContainerTransform" ScaleX="0.8" ScaleY="0.8"/>
+                </Border.RenderTransform>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button x:Name="SelectAllButton" Click="SelectAllButton_Click"
+                           Background="Transparent" BorderThickness="0" Padding="8,4">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B3;" FontSize="12"
+                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="Select All" VerticalAlignment="Center" FontSize="12"
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Separator -->
+                    <Border Width="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                           Margin="2,4"/>
+
+                    <Button x:Name="DeleteSelectedButton" Click="DeleteSelectedButton_Click"
+                           Background="Transparent" BorderThickness="0" Padding="8,4">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;" FontSize="12"
+                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock Text="Delete Selected" VerticalAlignment="Center" FontSize="12"
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Mappings List -->
+        <ListView Grid.Row="1" x:Name="MappingsListView"
+                 SelectionMode="Multiple" BorderThickness="0"
+                 Background="Transparent"
+                 ChoosingItemContainer="MappingsListView_ChoosingItemContainer"
+                 SelectionChanged="MappingsListView_SelectionChanged">
+            <ListView.Resources>
+                <!-- Dynamic styles for zebra pattern with rounded corners -->
+                <Style x:Key="EvenRowStyle" TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border x:Name="RootBorder"
+                                        Background="{ThemeResource RowEvenBrush}"
+                                        CornerRadius="6"
+                                        Margin="2">
+                                    <Grid>
+                                        <ContentPresenter x:Name="ContentPresenter"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Margin="{TemplateBinding Padding}"/>
+                                        <Border x:Name="HoverOverlay"
+                                                Background="{ThemeResource RowHoverBrush}"
+                                                CornerRadius="6"
+                                                Opacity="0"
+                                                IsHitTestVisible="False"/>
+                                    </Grid>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualStateGroup.Transitions>
+                                                <VisualTransition GeneratedDuration="0:0:0.15"/>
+                                            </VisualStateGroup.Transitions>
+                                            <VisualState x:Name="Normal"/>
+                                            <VisualState x:Name="PointerOver">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1"
+                                                                     Duration="0:0:0.15"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1"
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+                <Style x:Key="OddRowStyle" TargetType="ListViewItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border x:Name="RootBorder"
+                                        Background="{ThemeResource RowOddBrush}"
+                                        CornerRadius="6"
+                                        Margin="2">
+                                    <Grid>
+                                        <ContentPresenter x:Name="ContentPresenter"
+                                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                          Margin="{TemplateBinding Padding}"/>
+                                        <Border x:Name="HoverOverlay"
+                                                Background="{ThemeResource RowHoverBrush}"
+                                                CornerRadius="6"
+                                                Opacity="0"
+                                                IsHitTestVisible="False"/>
+                                    </Grid>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualStateGroup.Transitions>
+                                                <VisualTransition GeneratedDuration="0:0:0.15"/>
+                                            </VisualStateGroup.Transitions>
+                                            <VisualState x:Name="Normal"/>
+                                            <VisualState x:Name="PointerOver">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1"
+                                                                     Duration="0:0:0.15"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <Storyboard>
+                                                    <DoubleAnimation Storyboard.TargetName="HoverOverlay"
+                                                                     Storyboard.TargetProperty="Opacity"
+                                                                     To="1"
+                                                                     Duration="0:0:0.1"/>
+                                                </Storyboard>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.Resources>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="models:KeyMapping">
+                    <Border Padding="10" Background="Transparent" x:Name="ItemBorder" Loaded="ItemGrid_Loaded">
+                        <Grid x:Name="ItemGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Keyboard Key ComboBox -->
+                            <ComboBox Grid.Column="0" x:Name="KeyComboBox"
+                                     SelectedItem="{Binding KeyName, Mode=TwoWay}"
+                                     PlaceholderText="Select key..."
+                                     SelectionChanged="KeyComboBox_SelectionChanged"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <!-- Arrow Icon -->
+                            <FontIcon Grid.Column="1"
+                                     FontFamily="Segoe Fluent Icons"
+                                     Glyph="&#xE72A;"
+                                     FontSize="16"
+                                     Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                     HorizontalAlignment="Center"
+                                     VerticalAlignment="Center"/>
+
+                            <!-- Gamepad Control ComboBox -->
+                            <ComboBox Grid.Column="2" x:Name="GamepadComboBox"
+                                     SelectedItem="{Binding GamepadControl, Mode=TwoWay}"
+                                     PlaceholderText="Select control..."
+                                     SelectionChanged="GamepadComboBox_SelectionChanged"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <!-- Curve Description (only for analog mappings: sticks/triggers) -->
+                            <TextBlock Grid.Column="3" Text="{Binding CurveDescription}"
+                                      FontStyle="Italic" VerticalAlignment="Center" Margin="10,0"
+                                      Visibility="{Binding IsAnalog, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                            <!-- Validation Indicator -->
+                            <FontIcon Grid.Column="4" x:Name="ValidationIcon"
+                                     FontFamily="Segoe MDL2 Assets"
+                                     FontSize="16" VerticalAlignment="Center" Margin="5,0"
+                                     Glyph="{x:Bind ValidationGlyph, Mode=OneWay}"
+                                     Foreground="{x:Bind ValidationBrush, Mode=OneWay}"
+                                     Opacity="{x:Bind ValidationOpacity, Mode=OneWay}"/>
+
+                            <!-- Delete Button -->
+                            <Button Grid.Column="5" x:Name="ActionButton"
+                                   Width="30" Height="30" Style="{StaticResource AccentButtonStyle}"
+                                   Padding="0" Click="DeleteMappingButton_Click" Margin="5,0,0,0">
+                                <FontIcon x:Name="ActionIcon" FontFamily="Segoe MDL2 Assets"
+                                         Glyph="&#xE74D;" FontSize="14"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <FontIcon.RenderTransform>
+                                        <CompositeTransform x:Name="IconTransform"/>
+                                    </FontIcon.RenderTransform>
+                                </FontIcon>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</UserControl>

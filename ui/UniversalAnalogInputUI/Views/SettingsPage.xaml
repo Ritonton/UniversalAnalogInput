@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="UniversalAnalogInputUI.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:toolkit="using:CommunityToolkit.WinUI.Controls">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent"/>
+        <SolidColorBrush x:Key="SettingsCardBackground" Color="Transparent"/>
+    </Page.Resources>
+
+    <Grid Padding="15,0,15,15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Settings"
+                   Style="{StaticResource SubtitleTextBlockStyle}"
+                   Margin="0,0,0,15"/>
+
+        <!-- Settings Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="8">
+
+                <!-- Appearance Section -->
+                <TextBlock Text="Appearance"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,0,0,8"/>
+
+                <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                        CornerRadius="{ThemeResource ControlCornerRadius}"
+                        Padding="16,12">
+                    <StackPanel Spacing="12">
+
+                        <!-- Theme Selector -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Theme"
+                                          FontWeight="SemiBold"
+                                          Margin="0,0,0,4"/>
+                                <TextBlock Text="Choose your preferred color scheme"
+                                          FontSize="12"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+
+                            <ComboBox x:Name="ThemeComboBox"
+                                     Grid.Column="1"
+                                     MinWidth="140"
+                                     VerticalAlignment="Center"
+                                     SelectionChanged="ThemeComboBox_SelectionChanged">
+                                <ComboBoxItem Content="System Default" Tag="System"/>
+                                <ComboBoxItem Content="Light" Tag="Light"/>
+                                <ComboBoxItem Content="Dark" Tag="Dark"/>
+                            </ComboBox>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- Advanced Section -->
+                <TextBlock Text="Advanced"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,16,0,8"/>
+
+                <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                        CornerRadius="{ThemeResource ControlCornerRadius}"
+                        Padding="16,12">
+                    <StackPanel Spacing="12">
+
+                        <!-- Show Debug Tab Toggle -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Show Status Tab"
+                                          FontWeight="SemiBold"
+                                          Margin="0,0,0,4"/>
+                                <TextBlock FontSize="12"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                    <Run Text="Display the status monitoring tab in the navigation"/>
+                                    <LineBreak/>
+                                    <Run Text="Requires restart when enabling to capture initialization logs"
+                                         Foreground="{ThemeResource SystemFillColorAttentionBrush}"/>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <ToggleSwitch x:Name="ShowStatusTabToggle"
+                                         Grid.Column="1"
+                                         VerticalAlignment="Center"
+                                         Toggled="ShowStatusTabToggle_Toggled"/>
+                        </Grid>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- About Section -->
+                <TextBlock Text="About"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Margin="0,16,0,8"/>
+
+                <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                        CornerRadius="{ThemeResource ControlCornerRadius}">
+                    <toolkit:SettingsExpander
+                        Description="© 2025 Henri DELEMAZURE. All rights reserved."
+                        Header="Universal Analog Input">
+                    <TextBlock
+                        x:Name="VersionText"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                        IsTextSelectionEnabled="True" />
+                    <toolkit:SettingsExpander.Items>
+                        <toolkit:SettingsCard
+                            x:Name="GitCloneCard"
+                            Click="GitCloneCard_Click"
+                            Header="Clone this repository"
+                            IsClickEnabled="True">
+                            <toolkit:SettingsCard.Description>
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                             VerticalScrollBarVisibility="Disabled">
+                                    <TextBlock
+                                        x:Name="GitCloneTextBlock"
+                                        FontFamily="Consolas"
+                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                        IsTextSelectionEnabled="True"
+                                        Text="git clone https://github.com/Ritonton/UniversalAnalogInput.git"
+                                        TextWrapping="NoWrap" />
+                                </ScrollViewer>
+                            </toolkit:SettingsCard.Description>
+                            <toolkit:SettingsCard.ActionIcon>
+                                <FontIcon Glyph="&#xE8C8;" />
+                            </toolkit:SettingsCard.ActionIcon>
+                        </toolkit:SettingsCard>
+                        <toolkit:SettingsCard
+                            x:Name="ReportIssueCard"
+                            Click="ReportIssueCard_Click"
+                            Header="Report an issue"
+                            IsClickEnabled="True">
+                            <toolkit:SettingsCard.ActionIcon>
+                                <FontIcon Glyph="&#xE8A7;" />
+                            </toolkit:SettingsCard.ActionIcon>
+                        </toolkit:SettingsCard>
+                        <toolkit:SettingsCard
+                            HorizontalContentAlignment="Left"
+                            ContentAlignment="Vertical"
+                            Header="Dependencies &amp; references">
+                            <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                <HyperlinkButton Content="Wooting Analog SDK" NavigateUri="https://github.com/WootingKb/wooting-analog-sdk" />
+                                <HyperlinkButton Content="Universal Analog Plugin" NavigateUri="https://github.com/AnalogSense/universal-analog-plugin" />
+                                <HyperlinkButton Content="ViGEm Bus Driver" NavigateUri="https://github.com/nefarius/ViGEmBus" />
+                                <HyperlinkButton Content="WinUI 3" NavigateUri="https://learn.microsoft.com/fr-fr/windows/apps/winui" />
+                                <HyperlinkButton Content="Windows Community Toolkit" NavigateUri="https://aka.ms/toolkit/windows" />
+                            </StackPanel>
+                        </toolkit:SettingsCard>
+                        <toolkit:SettingsCard
+                            HorizontalContentAlignment="Left"
+                            ContentAlignment="Vertical"
+                            Header="License">
+                            <StackPanel Margin="-12,0,0,0" Orientation="Vertical">
+                                <TextBlock
+                                    Text="MIT License"
+                                    FontWeight="SemiBold"
+                                    Margin="12,4,0,4"/>
+                                <HyperlinkButton Content="View License" NavigateUri="https://github.com/Ritonton/UniversalAnalogInput/blob/master/LICENSE" />
+                                <HyperlinkButton Content="Third-Party Licenses" NavigateUri="https://github.com/Ritonton/UniversalAnalogInput/blob/master/THIRD_PARTY_LICENSES.md" />
+                            </StackPanel>
+                        </toolkit:SettingsCard>
+                    </toolkit:SettingsExpander.Items>
+                    </toolkit:SettingsExpander>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

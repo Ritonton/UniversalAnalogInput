@@ -1,0 +1,63 @@
+﻿<Application
+    x:Class="UniversalAnalogInputUI.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:media="using:Microsoft.UI.Xaml.Media"
+    xmlns:local="using:UniversalAnalogInputUI">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="ms-appx:///Controls/CopyButton.xaml" />
+                <ResourceDictionary Source="ms-appx:///Controls/OpacityMaskView.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/Button.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/Grid.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/GridViewItem.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/TextBlock.xaml" />
+                <ResourceDictionary Source="ms-appx:///Styles/SelectorBar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <StaticResource x:Key="ForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
+                    <StaticResource x:Key="SubtleForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+                    <StaticResource x:Key="CardStrokeBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+
+                    <SolidColorBrush x:Key="SurfaceCardBackgroundBrush" Color="#14000000" />
+                    <SolidColorBrush x:Key="SurfaceHeaderBackgroundBrush" Color="#0F000000" />
+
+                    <SolidColorBrush x:Key="HomePageBackgroundBrush" Color="Transparent" />
+                    <StaticResource x:Key="GalleryBackgroundBrush" ResourceKey="SolidBackgroundFillColorBaseBrush" />
+                    <StaticResource x:Key="GalleryBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+
+                    <SolidColorBrush x:Key="RowEvenBrush" Color="#06000000" />
+                    <SolidColorBrush x:Key="RowOddBrush"  Color="Transparent" />
+                    <SolidColorBrush x:Key="RowHoverBrush" Color="#14000000" />
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+                    <StaticResource x:Key="ForegroundBrush" ResourceKey="TextFillColorPrimaryBrush" />
+                    <StaticResource x:Key="SubtleForegroundBrush" ResourceKey="TextFillColorSecondaryBrush" />
+                    <StaticResource x:Key="CardStrokeBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
+
+                    <SolidColorBrush x:Key="SurfaceCardBackgroundBrush" Color="#14FFFFFF" />
+                    <SolidColorBrush x:Key="SurfaceHeaderBackgroundBrush" Color="#0FFFFFFF" />
+
+                    <SolidColorBrush x:Key="HomePageBackgroundBrush" Color="Transparent" />
+                    <StaticResource x:Key="GalleryBackgroundBrush" ResourceKey="SolidBackgroundFillColorBaseBrush" />
+                    <StaticResource x:Key="GalleryBorderBrush" ResourceKey="CardStrokeColorDefaultBrush" />
+
+                    <SolidColorBrush x:Key="RowEvenBrush" Color="#0AFFFFFF" />
+                    <SolidColorBrush x:Key="RowOddBrush"  Color="Transparent" />
+                    <SolidColorBrush x:Key="RowHoverBrush" Color="#22FFFFFF" />
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="HomePageBackgroundBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="GalleryBackgroundBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="GalleryBorderBrush" Color="{ThemeResource SystemColorWindowColor}" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

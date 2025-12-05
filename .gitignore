@@ -1,0 +1,50 @@
+# Rust
+/native/target/
+/target/
+/Cargo.lock
+
+# .NET
+/ui/**/bin/
+/ui/**/obj/
+/ui/**/*.user
+/ui/**/*.suo
+/ui/**/*.userosscache
+/ui/**/*.sln.docstates
+
+# Visual Studio
+.vs/
+*.vsidx
+*.vsconfig
+
+# Build outputs
+*.dll
+*.exe
+*.pdb
+
+# Logs and temp files  
+/logs/
+/temp/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# User configuration
+config.json
+profiles/
+
+# Publish artifacts
+/artifacts/
+
+#binlogs
+*.binlog
+
+#Tests
+/test/
+
+nul

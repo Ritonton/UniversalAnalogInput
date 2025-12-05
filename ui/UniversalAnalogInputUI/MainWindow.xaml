@@ -1,0 +1,210 @@
+﻿<Window
+    x:Class="UniversalAnalogInputUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:media="using:Microsoft.UI.Xaml.Media"
+    xmlns:models="using:UniversalAnalogInputUI.Models"
+    xmlns:controls="using:UniversalAnalogInputUI.Controls"
+    xmlns:sizers="using:CommunityToolkit.WinUI.Controls"
+    Title="Universal Analog Input">
+
+    
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TitleBar x:Name="titleBar" Grid.Row="0"
+                 Title="Universal Analog Input"
+                 IsPaneToggleButtonVisible="True"
+                 PaneToggleRequested="TitleBar_PaneToggleRequested">
+            <!-- This is a workaround for https://github.com/microsoft/microsoft-ui-xaml/issues/10374, once fixed we should just be using IconSource -->
+            <TitleBar.LeftHeader>
+                <Image
+                    Height="16"
+                    Width="16"
+                    Margin="8,0,8,0"
+                    Source="ms-appx:///Assets/icon.ico" />
+            </TitleBar.LeftHeader>
+        </TitleBar>
+
+        <!-- NavigationView for Profiles/Sub-Profiles -->
+        <NavigationView x:Name="MainNavigationView" Grid.Row="1"
+                       PaneDisplayMode="Left"
+                       OpenPaneLength="250"
+                       CompactPaneLength="60"
+                       CompactModeThresholdWidth="0"
+                       ExpandedModeThresholdWidth="1000"
+                       IsBackButtonVisible="Collapsed"
+                       IsPaneToggleButtonVisible="False"
+                       IsSettingsVisible="True"
+                       SelectionChanged="MainNavigationView_SelectionChanged"
+                       DisplayModeChanged="OnPaneDisplayModeChanged"
+                       ItemInvoked="MainNavigationView_ItemInvoked"
+                       Margin="0,0,0,0">
+
+            <NavigationView.PaneHeader>
+                <TextBlock Text="Profiles"
+                          Style="{StaticResource SubtitleTextBlockStyle}"
+                          Margin="16,10,0,10"/>
+            </NavigationView.PaneHeader>
+
+            <NavigationView.PaneFooter>
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid x:Name="ExpandedFooterContainer" Padding="8" HorizontalAlignment="Stretch" Grid.Row="0">
+                        <StackPanel x:Name="ExpandedFooterActions" Orientation="Vertical" Spacing="8">
+                            <Button x:Name="AddProfileButton"
+                                    Content="Add Profile"
+                                    HorizontalAlignment="Stretch"
+                                    Click="AddProfileButton_Click"
+                                    Style="{StaticResource AccentButtonStyle}"/>
+                            <Button x:Name="AddSubProfileButton"
+                                    Content="Add Sub-Profile"
+                                    HorizontalAlignment="Stretch"
+                                    Click="AddSubProfileButton_Click"
+                                    IsEnabled="False"
+                                    Style="{StaticResource AccentButtonStyle}"/>
+                            <Button x:Name="ImportProfileButton"
+                                    Content="Import Profile"
+                                    HorizontalAlignment="Stretch"
+                                    Click="ImportProfileButton_Click"
+                                    Style="{StaticResource SubtleButtonStyle}">
+                                <Button.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.ThemeDictionaries>
+                                            <ResourceDictionary x:Key="Light">
+                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#15000000"/>
+                                                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#25000000"/>
+                                            </ResourceDictionary>
+                                            <ResourceDictionary x:Key="Dark">
+                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#20FFFFFF"/>
+                                                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#30FFFFFF"/>
+                                            </ResourceDictionary>
+                                        </ResourceDictionary.ThemeDictionaries>
+                                    </ResourceDictionary>
+                                </Button.Resources>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid x:Name="CompactFooterContainer"
+                          Padding="6,6,6,7"
+                          Visibility="Collapsed"
+                          HorizontalAlignment="Stretch"
+                          Grid.Row="0"
+                          Width="{Binding CompactPaneLength, ElementName=MainNavigationView}">
+                        <Button x:Name="CompactAddButton"
+                                MinWidth="44"
+                                MinHeight="44"
+                                HorizontalAlignment="Stretch"
+                                Visibility="Collapsed"
+                                VerticalAlignment="Top"
+                                Style="{StaticResource AccentButtonStyle}"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+                            <Button.Content>
+                                <SymbolIcon Symbol="Add"/>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <MenuFlyout x:Name="CompactAddMenu" Placement="Right">
+                                    <MenuFlyoutItem x:Name="CompactAddProfileMenuItem"
+                                                    Text="Add Profile"
+                                                    Click="AddProfileButton_Click"/>
+                                    <MenuFlyoutItem x:Name="CompactAddSubProfileMenuItem"
+                                                    Text="Add Sub-Profile"
+                                                    Click="AddSubProfileButton_Click"
+                                                    IsEnabled="False"/>
+                                    <MenuFlyoutItem x:Name="CompactImportProfileMenuItem"
+                                                    Text="Import Profile"
+                                                    Click="ImportProfileButton_Click"/>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            Height="1"
+                            Margin="6,0,6,0"
+                            HorizontalAlignment="Stretch"
+                            Background="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                            Opacity="0.6"/>
+                </Grid>
+            </NavigationView.PaneFooter>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Profile Management Bar -->
+                <controls:ProfileManagementBarControl x:Name="ProfileManagementBar" Grid.Row="0" Margin="20,12,20,12"/>
+
+                <!-- Main Content Frame -->
+                <Grid Grid.Row="1" Margin="20,0,20,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="MappingsColumn" Width="3*" MinWidth="280"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition x:Name="DetailsColumn" Width="2*" MinWidth="260"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Panel - Mapping Configuration -->
+                    <Border Grid.Column="0" Background="{ThemeResource SurfaceCardBackgroundBrush}" CornerRadius="{ThemeResource ControlCornerRadius}"
+                           BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" Padding="20" Margin="0,0,2,0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <controls:MappingsListControl x:Name="MappingsListControl" Grid.Row="0" Grid.RowSpan="2"/>
+
+                    </Grid>
+                </Border>
+
+                    <sizers:GridSplitter Grid.Column="1"
+                                          Width="12"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Stretch"
+                                          ResizeDirection="Columns"
+                                          Background="Transparent"
+                                          IsTabStop="False"
+                                          CornerRadius="4"/>
+
+                    <!-- Right Panel - Tab Navigation Control -->
+                    <Border Grid.Column="2" Background="{ThemeResource SurfaceCardBackgroundBrush}" CornerRadius="{ThemeResource ControlCornerRadius}"
+                           BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}" BorderThickness="1" Margin="2,0,0,0">
+                        <controls:TabNavigationControl x:Name="TabNavigationControl"/>
+                    </Border>
+                </Grid>
+            </Grid>
+        </NavigationView>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Background="{ThemeResource SurfaceHeaderBackgroundBrush}" Padding="15,10" CornerRadius="{ThemeResource ControlCornerRadius}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" x:Name="FooterText" 
+                          Text="Ready - Configure your mappings and profiles" 
+                          Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" x:Name="VersionText" 
+                          Text="v1.0.0" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <controls:ToastControl x:Name="ToastControl" />
+    </Grid>
+</Window>

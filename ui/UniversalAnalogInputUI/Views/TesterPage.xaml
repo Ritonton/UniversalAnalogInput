@@ -1,0 +1,351 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="UniversalAnalogInputUI.Views.TesterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:UniversalAnalogInputUI.Controls"
+    Loaded="TesterPage_Loaded">
+
+    <!-- Resources for Transforms -->
+    <Page.Resources>
+        <TranslateTransform x:Key="LeftStickTransform" X="0" Y="0"/>
+        <TranslateTransform x:Key="RightStickTransform" X="0" Y="0"/>
+    </Page.Resources>
+
+    <Grid Padding="10,0,10,15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0"
+                   Text="Gamepad Tester"
+                   Style="{StaticResource SubtitleTextBlockStyle}"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center"/>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" HorizontalContentAlignment="Center">
+            <StackPanel Spacing="0" HorizontalAlignment="Center">
+
+                <Viewbox MaxWidth="900" Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Center">
+                    <Grid HorizontalAlignment="Center" MaxWidth="900">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Xbox Gamepad Visual -->
+                        <controls:XboxGamepadControl x:Name="GamepadVisual"
+                                                     Grid.Row="0"
+                                                     HorizontalAlignment="Center"/>
+
+                        <!-- Analog Stick Indicators -->
+                        <Grid Grid.Row="1" HorizontalAlignment="Center" Margin="0,-20,0,0" MaxWidth="780">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left Stick Group -->
+                            <Grid Grid.Column="1" HorizontalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Left Trigger Indicator -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="6" Width="28">
+                                    <TextBlock Text="LT"
+                                               FontWeight="SemiBold"
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"/>
+
+                                    <!-- Trigger Bar Container -->
+                                    <Canvas Width="28" Height="170">
+                                        <!-- Background -->
+                                        <Rectangle Fill="#1A1A1A"
+                                                  Width="28"
+                                                  Height="170"
+                                                  Canvas.Left="0"
+                                                  Canvas.Top="0"
+                                                  RadiusX="4"
+                                                  RadiusY="4"/>
+
+                                        <!-- Border -->
+                                        <Rectangle Stroke="#808080"
+                                                  StrokeThickness="2"
+                                                  Width="28"
+                                                  Height="170"
+                                                  Canvas.Left="0"
+                                                  Canvas.Top="0"
+                                                  RadiusX="4"
+                                                  RadiusY="4"/>
+
+                                        <!-- Fill Bar -->
+                                        <Rectangle x:Name="LeftTriggerBar"
+                                                  Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                  Width="24"
+                                                  Height="0"
+                                                  Canvas.Left="2"
+                                                  Canvas.Top="168"
+                                                  RadiusX="2"
+                                                  RadiusY="2"
+                                                  Opacity="0.8"/>
+
+                                </Canvas>
+                            </StackPanel>
+
+                                <!-- Left Stick Indicator -->
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="8">
+                                    <TextBlock Text="Left Stick"
+                                               FontWeight="SemiBold"
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"/>
+
+                                    <!-- Circle Container -->
+                                    <Canvas Width="170" Height="170">
+                                        <!-- Background Circle -->
+                                        <Ellipse Fill="#1A1A1A"
+                                                 Width="170"
+                                                 Height="170"
+                                                 Canvas.Left="0"
+                                                 Canvas.Top="0"/>
+
+                                        <!-- Vertical Grid Lines -->
+                                        <Line X1="42.5" Y1="15" X2="42.5" Y2="155"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+                                        <Line X1="127.5" Y1="15" X2="127.5" Y2="155"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+
+                                        <!-- Horizontal Grid Lines -->
+                                        <Line X1="15" Y1="42.5" X2="155" Y2="42.5"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+                                        <Line X1="15" Y1="127.5" X2="155" Y2="127.5"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+
+                                        <!-- Main Horizontal Cross Hair -->
+                                        <Line X1="0" Y1="85" X2="170" Y2="85"
+                                              Stroke="#606060"
+                                              StrokeThickness="1.5"
+                                              Opacity="0.8"/>
+
+                                        <!-- Main Vertical Cross Hair -->
+                                        <Line X1="85" Y1="0" X2="85" Y2="170"
+                                              Stroke="#606060"
+                                              StrokeThickness="1.5"
+                                              Opacity="0.8"/>
+
+                                        <!-- Outer Circle -->
+                                        <Ellipse Stroke="#808080"
+                                                 StrokeThickness="2"
+                                                 Width="170"
+                                                 Height="170"
+                                                 Canvas.Left="0"
+                                                 Canvas.Top="0"/>
+
+                                        <!-- Direction Line -->
+                                        <Line x:Name="LeftStickLine"
+                                              X1="85" Y1="85"
+                                              X2="85" Y2="85"
+                                              Stroke="{ThemeResource AccentFillColorDefaultBrush}"
+                                              StrokeThickness="2"/>
+
+                                        <!-- Center Point -->
+                                        <Ellipse Width="9" Height="9"
+                                                 Fill="#909090"
+                                                 Canvas.Left="80.5"
+                                                 Canvas.Top="80.5"/>
+
+                                        <!-- Moving Point -->
+                                        <Ellipse x:Name="LeftStickPoint"
+                                                 Width="16"
+                                                 Height="16"
+                                                 Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                 Stroke="#FFFFFF"
+                                                 StrokeThickness="2"
+                                                 Canvas.Left="77"
+                                                 Canvas.Top="77"/>
+                                    </Canvas>
+
+                                    <!-- Values Display -->
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                Spacing="20">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="X:" FontWeight="SemiBold" FontSize="18"/>
+                                            <TextBlock x:Name="LeftStickXValue" Text="0%" MinWidth="50" FontSize="18"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="Y:" FontWeight="SemiBold" FontSize="18"/>
+                                            <TextBlock x:Name="LeftStickYValue" Text="0%" MinWidth="50" FontSize="18"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Right Stick Group -->
+                            <Grid Grid.Column="3" HorizontalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Right Stick Indicator -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="8">
+                                    <TextBlock Text="Right Stick"
+                                               FontWeight="SemiBold"
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"/>
+
+                                    <!-- Circle Container -->
+                                    <Canvas Width="170" Height="170">
+                                        <!-- Background Circle -->
+                                        <Ellipse Fill="#1A1A1A"
+                                                 Width="170"
+                                                 Height="170"
+                                                 Canvas.Left="0"
+                                                 Canvas.Top="0"/>
+
+                                        <!-- Vertical Grid Lines -->
+                                        <Line X1="42.5" Y1="15" X2="42.5" Y2="155"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+                                        <Line X1="127.5" Y1="15" X2="127.5" Y2="155"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+
+                                        <!-- Horizontal Grid Lines -->
+                                        <Line X1="15" Y1="42.5" X2="155" Y2="42.5"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+                                        <Line X1="15" Y1="127.5" X2="155" Y2="127.5"
+                                              Stroke="#404040"
+                                              StrokeThickness="1"
+                                              Opacity="0.6"/>
+
+                                        <!-- Main Horizontal Cross Hair -->
+                                        <Line X1="0" Y1="85" X2="170" Y2="85"
+                                              Stroke="#606060"
+                                              StrokeThickness="1.5"
+                                              Opacity="0.8"/>
+
+                                        <!-- Main Vertical Cross Hair -->
+                                        <Line X1="85" Y1="0" X2="85" Y2="170"
+                                              Stroke="#606060"
+                                              StrokeThickness="1.5"
+                                              Opacity="0.8"/>
+
+                                        <!-- Outer Circle -->
+                                        <Ellipse Stroke="#808080"
+                                                 StrokeThickness="2"
+                                                 Width="170"
+                                                 Height="170"
+                                                 Canvas.Left="0"
+                                                 Canvas.Top="0"/>
+
+                                        <!-- Direction Line -->
+                                        <Line x:Name="RightStickLine"
+                                              X1="85" Y1="85"
+                                              X2="85" Y2="85"
+                                              Stroke="{ThemeResource AccentFillColorDefaultBrush}"
+                                              StrokeThickness="2"/>
+
+                                        <!-- Center Point -->
+                                        <Ellipse Width="9" Height="9"
+                                                 Fill="#909090"
+                                                 Canvas.Left="80.5"
+                                                 Canvas.Top="80.5"/>
+
+                                        <!-- Moving Point -->
+                                        <Ellipse x:Name="RightStickPoint"
+                                                 Width="16"
+                                                 Height="16"
+                                                 Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                 Stroke="#FFFFFF"
+                                                 StrokeThickness="2"
+                                                 Canvas.Left="77"
+                                                 Canvas.Top="77"/>
+                                    </Canvas>
+
+                                    <!-- Values Display -->
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                Spacing="20">
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="X:" FontWeight="SemiBold" FontSize="18"/>
+                                            <TextBlock x:Name="RightStickXValue" Text="0%" MinWidth="50" FontSize="18"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <TextBlock Text="Y:" FontWeight="SemiBold" FontSize="18"/>
+                                            <TextBlock x:Name="RightStickYValue" Text="0%" MinWidth="50" FontSize="18"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Right Trigger Indicator -->
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" Spacing="6" Width="28">
+                                    <TextBlock Text="RT"
+                                               FontWeight="SemiBold"
+                                               FontSize="18"
+                                               HorizontalAlignment="Center"/>
+
+                                    <!-- Trigger Bar Container -->
+                                    <Canvas Width="28" Height="170">
+                                        <!-- Background -->
+                                        <Rectangle Fill="#1A1A1A"
+                                                  Width="28"
+                                                  Height="170"
+                                                  Canvas.Left="0"
+                                                  Canvas.Top="0"
+                                                  RadiusX="4"
+                                                  RadiusY="4"/>
+
+                                        <!-- Border -->
+                                        <Rectangle Stroke="#808080"
+                                                  StrokeThickness="2"
+                                                  Width="28"
+                                                  Height="170"
+                                                  Canvas.Left="0"
+                                                  Canvas.Top="0"
+                                                  RadiusX="4"
+                                                  RadiusY="4"/>
+
+                                        <!-- Fill Bar -->
+                                        <Rectangle x:Name="RightTriggerBar"
+                                                  Fill="{ThemeResource AccentFillColorDefaultBrush}"
+                                                  Width="24"
+                                                  Height="0"
+                                                  Canvas.Left="2"
+                                                  Canvas.Top="168"
+                                                  RadiusX="2"
+                                                  RadiusY="2"
+                                                  Opacity="0.8"/>
+
+                                </Canvas>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Viewbox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

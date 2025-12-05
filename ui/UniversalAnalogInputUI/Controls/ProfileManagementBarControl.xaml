@@ -1,0 +1,316 @@
+﻿<UserControl
+    x:Class="UniversalAnalogInputUI.Controls.ProfileManagementBarControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="80"
+    d:DesignWidth="600">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <TextBlock x:Name="SelectedProfileText"
+                           Text="Select a profile"
+                           Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                           FontWeight="SemiBold"
+                           FontSize="18"
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="Cycle Hotkey: "
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               FontSize="14"
+                               VerticalAlignment="Center"/>
+
+                    <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{ThemeResource ControlCornerRadius}"
+                            Padding="2">
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <Button x:Name="ProfileHotkeyAddButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinWidth="0"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Click="OnAssignProfileHotkeyClicked"
+                                    ToolTipService.ToolTip="Assign cycling hotkey for sub-profiles">
+                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE710;"
+                                          FontSize="12"
+                                          VerticalAlignment="Center"
+                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </Button>
+
+                            <Button x:Name="ProfileHotkeyButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Visibility="Collapsed"
+                                    Click="OnAssignProfileHotkeyClicked"
+                                    ToolTipService.ToolTip="Modify cycling hotkey for sub-profiles">
+                                <TextBlock x:Name="ProfileHotkeyText"
+                                           Text=""
+                                           Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                           FontWeight="SemiBold"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </Button>
+
+                            <Rectangle Width="1"
+                                       Height="16"
+                                       Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="4,0"
+                                       x:Name="ProfileHotkeySeparator"
+                                       Visibility="Collapsed"/>
+
+                            <Button x:Name="ProfileHotkeyRemoveButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinWidth="0"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Visibility="Collapsed"
+                                    Click="OnClearProfileHotkeyClicked"
+                                    PointerEntered="OnRemoveButtonPointerEntered"
+                                    PointerExited="OnRemoveButtonPointerExited"
+                                    ToolTipService.ToolTip="Remove cycling hotkey">
+                                <Button.Resources>
+                                    <ResourceDictionary>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver">#20DC2626</SolidColorBrush>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPressed">#30DC2626</SolidColorBrush>
+                                    </ResourceDictionary>
+                                </Button.Resources>
+                                <FontIcon x:Name="ProfileHotkeyRemoveIcon"
+                                          FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE74D;"
+                                          FontSize="12"
+                                          VerticalAlignment="Center"
+                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+
+            <FontIcon x:Name="BreadcrumbSeparator"
+                      FontFamily="Segoe MDL2 Assets"
+                      Glyph="&#xE76C;"
+                      FontSize="15"
+                      Foreground="{ThemeResource SubtleForegroundBrush}"
+                      VerticalAlignment="Center"
+                      Visibility="Collapsed"/>
+
+            <StackPanel x:Name="SubProfileSection"
+                        Orientation="Horizontal"
+                        Spacing="10"
+                        VerticalAlignment="Center"
+                        Visibility="Collapsed">
+                <TextBlock x:Name="SelectedSubProfileText"
+                           Text="Select a sub-profile"
+                           Foreground="{ThemeResource TextFillColorPrimaryBrush}"
+                           FontWeight="SemiBold"
+                           FontSize="15"
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="Activation Hotkey: "
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               FontSize="13"
+                               VerticalAlignment="Center"/>
+
+                    <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                            BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            CornerRadius="{ThemeResource ControlCornerRadius}"
+                            Padding="2">
+                        <StackPanel Orientation="Horizontal" Spacing="0">
+                            <Button x:Name="SubProfileHotkeyAddButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinWidth="0"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Click="OnAssignSubProfileHotkeyClicked"
+                                    ToolTipService.ToolTip="Assign direct activation hotkey">
+                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE710;"
+                                          FontSize="12"
+                                          VerticalAlignment="Center"
+                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </Button>
+
+                            <Button x:Name="SubProfileHotkeyButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Visibility="Collapsed"
+                                    Click="OnAssignSubProfileHotkeyClicked"
+                                    ToolTipService.ToolTip="Modify direct activation hotkey">
+                                <TextBlock x:Name="SubProfileHotkeyText"
+                                           Text=""
+                                           Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                           FontWeight="SemiBold"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"/>
+                            </Button>
+
+                            <Rectangle Width="1"
+                                       Height="16"
+                                       Fill="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                                       VerticalAlignment="Center"
+                                       Margin="4,0"
+                                       x:Name="SubProfileHotkeySeparator"
+                                       Visibility="Collapsed"/>
+
+                            <Button x:Name="SubProfileHotkeyRemoveButton"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Padding="6,4"
+                                    MinWidth="0"
+                                    MinHeight="0"
+                                    Height="24"
+                                    VerticalAlignment="Center"
+                                    Visibility="Collapsed"
+                                    Click="OnClearSubProfileHotkeyClicked"
+                                    PointerEntered="OnRemoveButtonPointerEntered"
+                                    PointerExited="OnRemoveButtonPointerExited"
+                                    ToolTipService.ToolTip="Remove activation hotkey">
+                                <Button.Resources>
+                                    <ResourceDictionary>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPointerOver">#20DC2626</SolidColorBrush>
+                                        <SolidColorBrush x:Key="ButtonBackgroundPressed">#30DC2626</SolidColorBrush>
+                                    </ResourceDictionary>
+                                </Button.Resources>
+                                <FontIcon x:Name="SubProfileHotkeyRemoveIcon"
+                                          FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE74D;"
+                                          FontSize="12"
+                                          VerticalAlignment="Center"
+                                          Foreground="{ThemeResource AccentFillColorDefaultBrush}"/>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+            <Button x:Name="DegradedModeIndicatorButton"
+                    Visibility="Collapsed"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="8,4"
+                    CornerRadius="4"
+                    ToolTipService.ToolTip="Click to view missing dependencies"
+                    Click="DegradedModeIndicatorButton_Click">
+                <Button.Resources>
+                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Transparent"/>
+                    <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="Transparent"/>
+                </Button.Resources>
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE7BA;"
+                             FontSize="12"
+                             Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                             VerticalAlignment="Center"/>
+                    <TextBlock Text="Degraded Mode"
+                               FontSize="13"
+                               Foreground="{ThemeResource SystemFillColorAttentionBrush}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"/>
+                </StackPanel>
+            </Button>
+
+            <StackPanel x:Name="KeyboardStatusIndicatorPanel"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        VerticalAlignment="Center"
+                        ToolTipService.ToolTip="Keyboard connection status">
+                <Ellipse x:Name="KeyboardStatusIndicator"
+                         Width="10"
+                         Height="10"
+                         Fill="{ThemeResource TextFillColorTertiaryBrush}"
+                         VerticalAlignment="Center"
+                         Margin="0,2,0,0"/>
+                <TextBlock x:Name="KeyboardStatusText"
+                           Text="Keyboard"
+                           FontSize="13"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
+                    BorderBrush="{ThemeResource SurfaceStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{ThemeResource ControlCornerRadius}"
+                    VerticalAlignment="Center">
+                <Button x:Name="PauseButton"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Padding="14, 10"
+                        ToolTipService.ToolTip="Pause/Resume mapping"
+                        Click="OnPauseButtonClicked">
+                <StackPanel x:Name="PauseButtonContent" Orientation="Horizontal" Spacing="8">
+                    <TextBlock x:Name="PauseButtonText"
+                               Text="Pause"
+                               Width="38"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                               VerticalAlignment="Center"
+                               TextAlignment="Left"
+                               Margin="0,-2,0,0"/>
+                    <Grid Width="24" Height="24">
+                        <ProgressRing x:Name="PauseSpinner"
+                                      Width="20"
+                                      Height="20"
+                                      IsActive="False"
+                                      Visibility="Collapsed"/>
+                        <FontIcon x:Name="PlayIcon"
+                                  FontFamily="Segoe Fluent Icons"
+                                  Glyph="&#xF5B0;"
+                                  FontSize="20"
+                                  Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                  Opacity="0">
+                            <FontIcon.RenderTransform>
+                                <ScaleTransform x:Name="PlayIconScale" ScaleX="0.8" ScaleY="0.8" CenterX="10" CenterY="10"/>
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                        <FontIcon x:Name="PauseIcon"
+                                  FontFamily="Segoe Fluent Icons"
+                                  Glyph="&#xF8AE;"
+                                  FontSize="20"
+                                  Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                                  Opacity="1">
+                            <FontIcon.RenderTransform>
+                                <ScaleTransform x:Name="PauseIconScale" ScaleX="1" ScaleY="1" CenterX="10" CenterY="10"/>
+                            </FontIcon.RenderTransform>
+                        </FontIcon>
+                    </Grid>
+                </StackPanel>
+        </Button>
+        </Border>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,162 @@
+﻿<ContentDialog x:Class="UniversalAnalogInputUI.Dialogs.PerformanceMonitorDialog"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              Title="Performance System Monitor"
+              PrimaryButtonText="Close"
+              DefaultButton="Primary"
+              RequestedTheme="Dark">
+    
+    <ContentDialog.Resources>
+        <Style TargetType="ContentDialog">
+            <Setter Property="Background" Value="#FF1A202C"/>
+            <Setter Property="BorderBrush" Value="#FF4A5568"/>
+        </Style>
+    </ContentDialog.Resources>
+    
+    <Grid MinWidth="600" MinHeight="500">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Border Grid.Row="0" Background="#FF2D3748" CornerRadius="8" Padding="20" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="Optimized System" FontSize="20" FontWeight="Bold" 
+                          Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="Real-time monitoring of fast profile switching and mapping performance" 
+                          FontSize="12" Foreground="#FFA0AEC0" 
+                          HorizontalAlignment="Center" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+        
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="15">
+                
+                <Border Background="#FF0F172A" CornerRadius="8" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="System Performance" FontSize="16" FontWeight="SemiBold" 
+                                  Foreground="#FF60A5FA" Margin="0,0,0,10"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Mapping FPS:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="MappingFpsText" Text="120.0 FPS" 
+                                      Foreground="#FF10B981" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Hotkey Detection:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="HotkeyHzText" Text="120 Hz" 
+                                      Foreground="#FF10B981" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Profile Switch Time:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="SwitchTimeText" Text="500 μs" 
+                                      Foreground="#FF34D399" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Target Latency:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="LatencyText" Text="&lt; 1ms" 
+                                      Foreground="#FF34D399" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                
+                <Border Background="#FF0F172A" CornerRadius="8" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Profile Cache" FontSize="16" FontWeight="SemiBold" 
+                                  Foreground="#FF8B5CF6" Margin="0,0,0,10"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Cached Profiles:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ProfilesText" Text="0" 
+                                      Foreground="#FF60A5FA" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Sub-Profiles:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="SubProfilesText" Text="0" 
+                                      Foreground="#FF60A5FA" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Switch Method:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="SwitchMethodText" Text="Atomic Zero-Copy" 
+                                      Foreground="#FF34D399" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Memory Usage:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="MemoryUsageText" Text="0 KB" 
+                                      Foreground="#FFF59E0B" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                            
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Current Active:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="CurrentActiveText" Text="No" 
+                                      Foreground="#FFEF4444" FontFamily="Consolas" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                
+                <Border Background="#FF0F172A" CornerRadius="8" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="System Components" FontSize="16" FontWeight="SemiBold" 
+                                  Foreground="#FFF59E0B" Margin="0,0,0,10"/>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Wooting SDK:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="WootingStatusText" Text="Not Connected" 
+                                      Foreground="#FFEF4444" FontFamily="Consolas"/>
+                            
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="ViGEm Client:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="VigemStatusText" Text="Not Connected" 
+                                      Foreground="#FFEF4444" FontFamily="Consolas"/>
+                            
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Mapping Thread:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="MappingStatusText" Text="Stopped" 
+                                      Foreground="#FFEF4444" FontFamily="Consolas"/>
+                            
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Hotkey Manager:" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="HotkeyStatusText" Text="Active" 
+                                      Foreground="#FF10B981" FontFamily="Consolas"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                
+            </StackPanel>
+        </ScrollViewer>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" 
+                   Spacing="10" Margin="0,20,0,0">
+            <Button x:Name="RefreshButton" Content="Refresh Metrics" 
+                   Background="#FF3B82F6" Foreground="White" BorderBrush="Transparent" 
+                   Padding="15,8" Click="RefreshButton_Click"/>
+            <Button x:Name="OptimizeButton" Content="Fast Mode" 
+                   Background="#FF10B981" Foreground="White" BorderBrush="Transparent" 
+                   Padding="15,8" Click="OptimizeButton_Click"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

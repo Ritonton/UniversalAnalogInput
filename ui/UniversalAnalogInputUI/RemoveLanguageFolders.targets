@@ -1,0 +1,50 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Custom target to remove unwanted language folders from WinUI 3 / WindowsAppSDK builds -->
+  <!-- This is necessary because WindowsAppSDKSelfContained=true copies ALL language folders -->
+
+  <PropertyGroup>
+    <!-- Specify languages to KEEP (all others will be deleted) -->
+    <OutputLanguages>en-US</OutputLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LanguageItems Include="$(OutputLanguages.Split(';'))" />
+  </ItemGroup>
+
+  <!-- Create list of files to preserve -->
+  <Target Name="CreatePreserveList" AfterTargets="Build">
+    <PropertyGroup>
+      <OutputLanguagesToKeep>@(LanguageItems->'$(OutDir)%(Identity)\*.mui')</OutputLanguagesToKeep>
+    </PropertyGroup>
+  </Target>
+
+  <!-- Remove all language folders except those in OutputLanguages -->
+  <Target Name="RemoveUnwantedLanguageFolders" AfterTargets="CreatePreserveList">
+    <ItemGroup>
+      <!-- Find all .mui files (language resources) -->
+      <AllMuiFiles Include="$(OutDir)*\*.mui" />
+      <!-- Exclude the ones we want to keep -->
+      <MuiFilesToRemove Include="@(AllMuiFiles)" Exclude="$(OutputLanguagesToKeep)" />
+      <!-- Get the parent directories of files to remove -->
+      <LanguageFoldersToRemove Include="@(MuiFilesToRemove->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+
+    <!-- Remove the unwanted language folders -->
+    <RemoveDir Directories="@(LanguageFoldersToRemove)" />
+
+    <Message Text="[RemoveLanguageFolders] Removed unwanted language folders, kept: $(OutputLanguages)" Importance="high" />
+  </Target>
+
+  <!-- Also clean language folders during Publish -->
+  <Target Name="RemoveUnwantedLanguageFoldersPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <AllMuiFilesPublish Include="$(PublishDir)*\*.mui" />
+      <MuiFilesToRemovePublish Include="@(AllMuiFilesPublish)" Exclude="@(LanguageItems->'$(PublishDir)%(Identity)\*.mui')" />
+      <LanguageFoldersToRemovePublish Include="@(MuiFilesToRemovePublish->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+
+    <RemoveDir Directories="@(LanguageFoldersToRemovePublish)" />
+
+    <Message Text="[RemoveLanguageFolders] Cleaned publish output, kept: $(OutputLanguages)" Importance="high" />
+  </Target>
+</Project>

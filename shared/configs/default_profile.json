@@ -1,0 +1,36 @@
+{
+  "name": "Default Profile",
+  "description": "Default analog keyboard to gamepad mapping",
+  "keyMappings": [
+    {
+      "keyCode": 87,
+      "keyName": "W",
+      "target": "LeftStickY",
+      "sensitivity": 1.0,
+      "deadzone": 0.1
+    },
+    {
+      "keyCode": 65,
+      "keyName": "A", 
+      "target": "LeftStickX",
+      "sensitivity": -1.0,
+      "deadzone": 0.1
+    },
+    {
+      "keyCode": 83,
+      "keyName": "S",
+      "target": "LeftStickY", 
+      "sensitivity": -1.0,
+      "deadzone": 0.1
+    },
+    {
+      "keyCode": 68,
+      "keyName": "D",
+      "target": "LeftStickX",
+      "sensitivity": 1.0,
+      "deadzone": 0.1
+    }
+  ],
+  "created": "2024-01-01T00:00:00.000Z",
+  "lastModified": "2024-01-01T00:00:00.000Z"
+}
