@@ -83,17 +83,20 @@ Before installing Universal Analog Input, ensure you have:
 
 ### Download
 
-**Installer**
+**Installer (Recommended)**
 
-An installer is currently in development that will automatically install:
-- Universal Analog Input application
+Download the latest installer: [UniversalAnalogInput-Setup-v1.0.0.exe](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
+
+The installer automatically handles:
+- Universal Analog Input application installation
 - ViGEm Bus Driver (virtual gamepad emulation)
 - Wooting Analog SDK with plugin support
-- Uninstallation utility
-
-For now, you can build from source:
+- Start Menu shortcuts
+- Clean uninstallation utility
 
 **Build from Source**
+
+Alternatively, you can build from source:
 
 Requirements:
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)

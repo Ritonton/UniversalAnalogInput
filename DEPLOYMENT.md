@@ -47,16 +47,18 @@ This compiles:
 
 Output: `artifacts/UniversalAnalogInput-<timestamp>/`
 
-### 3. Create Installer (Recommended)
+### 3. Create Installer
 
-**Inno Setup Installer** (Coming Soon)
+**Inno Setup Installer**
 
-The installer will automatically:
-- Install UniversalAnalogInput application
-- Download and install ViGEm Bus Driver if not present
-- Download and install Wooting Analog SDK with plugin support
-- Create Start Menu shortcuts
-- Add uninstaller to Windows Programs & Features
+The installer automatically:
+- Installs UniversalAnalogInput application
+- Downloads and installs ViGEm Bus Driver if not present
+- Downloads and installs Wooting Analog SDK with plugin support
+- Creates Start Menu shortcuts
+- Adds uninstaller to Windows Programs & Features
+
+Latest release: [v1.0.0](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
 
 **Manual ZIP Distribution**
 
@@ -69,10 +71,10 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 
 ## Installation Methods
 
-### Method 1: Inno Setup Installer (Recommended - Coming Soon)
+### Method 1: Inno Setup Installer (Recommended)
 
 **For end users:**
-1. Download `UniversalAnalogInput-Setup-v1.0.0.exe`
+1. Download `UniversalAnalogInput-Setup-v1.0.0.exe` from the [latest release](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
 2. Run the installer
 3. Follow the installation wizard
 4. Dependencies (ViGEm, Wooting SDK) are installed automatically
@@ -84,7 +86,7 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 - Clean uninstallation
 - Version management
 
-### Method 2: Manual ZIP Installation (Current)
+### Method 2: Manual ZIP Installation (Alternative)
 
 **For end users:**
 1. Ensure prerequisites are installed:
@@ -155,7 +157,7 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 
 ## Distribution Checklist
 
-### For ZIP Distribution (Current)
+### For ZIP Distribution (Alternative)
 
 - [ ] Update version in `native/Cargo.toml`
 - [ ] Update version in `ui/UniversalAnalogInputUI/UniversalAnalogInputUI.csproj`
@@ -170,19 +172,21 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 - [ ] Test ZIP extraction and installation
 - [ ] Upload to GitHub Releases with release notes
 
-### For Installer Distribution (Future)
+### For Installer Distribution
 
 - [ ] Update version numbers
 - [ ] Build release package
 - [ ] Test package
-- [ ] Compile Inno Setup installer script
+- [ ] Build installer (using private Inno Setup script)
 - [ ] Test installer:
   - [ ] Fresh install
   - [ ] Upgrade from previous version
   - [ ] Uninstall
   - [ ] Dependency detection/installation
 - [ ] Sign installer (optional, for trusted publisher status)
-- [ ] Upload to GitHub Releases
+- [ ] Upload precompiled installer to GitHub Releases
+
+**Note**: The Inno Setup script is not included in the public repository. Only the precompiled installer binary (`UniversalAnalogInput-Setup-v*.exe`) is distributed via GitHub Releases.
 
 ## Technical Notes
 
@@ -281,8 +285,8 @@ The UI displays its version on the Settings page via reflection.
 ### Common Issues
 
 **"ViGEm driver not found"**
-- Install ViGEm Bus Driver before running
-- Installer will handle this automatically (future)
+- Use the Inno Setup installer which handles ViGEm installation automatically
+- Or manually install ViGEm Bus Driver before running if using ZIP distribution
 
 **"Wooting SDK not detected"**
 - Install Wooting Analog SDK with plugin support
