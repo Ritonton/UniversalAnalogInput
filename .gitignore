@@ -20,6 +20,7 @@
 *.dll
 *.exe
 *.pdb
+*.msi
 
 # Logs and temp files  
 /logs/
