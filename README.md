@@ -435,6 +435,20 @@ For full details, see [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_SERVI
 
 <br/>
 
+## Changelog
+
+**Current Version: 1.0.1** (January 14, 2026)
+
+### Latest Release Highlights
+- **Sentry Integration** - Automatic crash reporting (can be disabled)
+- **Legal Documentation** - GDPR-compliant privacy and terms
+- **Improved Error Tracking** - Better bug identification and fixing
+- **Session Monitoring** - Release health and stability metrics
+
+See [CHANGELOG.md](CHANGELOG.md) for complete version history and upgrade guide.
+
+<br/>
+
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Ritonton/UniversalAnalogInput/issues)
