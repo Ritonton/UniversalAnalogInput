@@ -314,4 +314,101 @@ The UI displays its version on the Settings page via reflection.
 
 ---
 
-**Last Updated**: 2025-12-05
+---
+
+## Legal & Privacy Compliance (Release)
+
+### Pre-Release Legal Documentation
+
+All legal documents must be verified and included in the installation before release:
+
+- [x] **README.md** - Updated with Sentry distinction (source vs release)
+- [x] **LICENSE** - MIT License with 2025-2026 copyright
+- [x] **TERMS_OF_SERVICE.md** - Sentry enabled by default, section 3.5 DPA reference
+- [x] **PRIVACY_POLICY.md** - Complete GDPR compliance, section 13 DPA details
+- [x] **THIRD_PARTY_LICENSES.md** - All dependencies including Sentry
+- [x] **DEPLOYMENT.md** - This file, release checklist
+
+### Sentry Configuration
+
+**Official Release Status**:
+- Sentry is **ENABLED by default** in distributed binaries
+- Uses production DSN keys from `deploy/.env`
+- **No PII collected** (send_default_pii: false)
+- Users can disable via `.env` file (see section below)
+
+**Storage Locations**:
+- `deploy/.env` - Production DSN configuration (ignored in .gitignore)
+- Copied to `{app}\.env` by Inno Setup during installation
+- Located at `%LOCALAPPDATA%\UniversalAnalogInput\.env` at runtime
+
+**User Control**:
+Users can disable Sentry by:
+1. Editing `%LOCALAPPDATA%\UniversalAnalogInput\.env` and commenting out DSN lines
+2. Deleting the `.env` file entirely
+
+### Data Processing Agreement (DPA)
+
+- [x] Sentry DPA available at: https://sentry.io/legal/dpa/
+- [x] Automatic application for all Sentry customers
+- [x] No additional signature required
+- [x] Referenced in TERMS_OF_SERVICE.md section 3.5
+- [x] Referenced in PRIVACY_POLICY.md section 13
+- [x] GDPR compliance for EU users documented
+
+### Installer Legal Integration
+
+The Inno Setup installer (`installer/setup.iss`) includes:
+- [x] `TERMS_OF_SERVICE.md` displayed before installation
+- [x] `PRIVACY_POLICY.md` included in installation
+- [x] `THIRD_PARTY_LICENSES.md` included in installation
+- [x] `deploy/.env` copied as `.env` with production DSN keys
+- [x] User must accept terms before proceeding
+- [x] Copyright year: 2025-2026
+
+---
+
+## Release Checklist
+
+### Before Building Installer
+
+- [ ] Update version in `native/Cargo.toml`
+- [ ] Update version in `ui/UniversalAnalogInputUI/UniversalAnalogInputUI.csproj`
+- [ ] Verify `deploy/.env` contains correct production DSN keys
+- [ ] Verify all legal documents are present:
+  - [ ] README.md (with Sentry distinction)
+  - [ ] LICENSE (2025-2026)
+  - [ ] TERMS_OF_SERVICE.md (with DPA)
+  - [ ] PRIVACY_POLICY.md (with DPA)
+  - [ ] THIRD_PARTY_LICENSES.md
+
+### Building & Testing
+
+- [ ] Build release: `.\scripts\build.ps1 -Release`
+- [ ] Test Sentry crash reporting:
+  - [ ] Trigger crash via test method
+  - [ ] Verify crash appears in Sentry dashboard
+  - [ ] Verify no PII in crash report
+- [ ] Test Sentry disable:
+  - [ ] Comment out DSN in `.env`
+  - [ ] Verify no crash sent to Sentry
+  - [ ] Re-enable and test again
+- [ ] Compile Inno Setup: `iscc installer\setup.iss`
+- [ ] Test installer:
+  - [ ] Fresh installation on clean system
+  - [ ] Verify all files copied correctly
+  - [ ] Verify `.env` with DSN present
+  - [ ] Launch application and verify Sentry works
+
+### Release Distribution
+
+- [ ] Upload `UniversalAnalogInput-Setup-v{VERSION}.exe` to GitHub
+- [ ] Include release notes mentioning:
+  - [ ] Sentry integration for crash reporting
+  - [ ] How to disable Sentry
+  - [ ] Links to legal documents
+- [ ] Monitor Sentry dashboard for crashes post-release
+
+---
+
+**Last Updated**: 2026-01-14

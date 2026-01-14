@@ -5,8 +5,88 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 
 static CRASH_LOG_PATH: Mutex<Option<PathBuf>> = Mutex::new(None);
+static SENTRY_GUARD: Mutex<Option<sentry::ClientInitGuard>> = Mutex::new(None);
 
-/// Initialize env_logger with a default WARN level unless `RUST_LOG` overrides it.
+/// Initialize Sentry monitoring with optional DSN.
+/// If DSN is None or empty, Sentry will be disabled.
+pub fn init_sentry(dsn: Option<&str>, environment: Option<&str>) -> bool {
+    let dsn_value = match dsn {
+        Some(d) if !d.is_empty() => d,
+        _ => {
+            info!("[SENTRY] No DSN provided - Sentry disabled");
+            return false;
+        }
+    };
+
+    let env_cow = environment.map(|e| std::borrow::Cow::Owned(e.to_string()));
+
+    let guard = sentry::init((
+        dsn_value,
+        sentry::ClientOptions {
+            release: sentry::release_name!(),
+            environment: env_cow,
+            attach_stacktrace: true,
+            send_default_pii: false,
+            // Enable Release Health tracking (crash-free sessions/users, adoption)
+            auto_session_tracking: true,
+            session_mode: sentry::SessionMode::Application,
+            ..Default::default()
+        },
+    ));
+
+    if guard.is_enabled() {
+        let mut guard_lock = SENTRY_GUARD.lock().unwrap();
+        *guard_lock = Some(guard);
+        info!("[SENTRY] Initialized successfully - Environment: {:?}", environment);
+        true
+    } else {
+        info!("[SENTRY] Failed to initialize");
+        false
+    }
+}
+
+/// Check if Sentry is currently enabled.
+pub fn is_sentry_enabled() -> bool {
+    let guard = SENTRY_GUARD.lock().unwrap();
+    guard.as_ref().map_or(false, |g| g.is_enabled())
+}
+
+/// Shutdown Sentry and end the current session.
+/// This ensures the session is marked as "ended" normally and data is flushed.
+pub fn shutdown_sentry() {
+    let mut guard_lock = SENTRY_GUARD.lock().unwrap();
+    if let Some(guard) = guard_lock.take() {
+        info!("[SENTRY] Shutting down - ending session and flushing events");
+        // Dropping the guard will:
+        // 1. End the current session
+        // 2. Flush all pending events
+        // 3. Close the HTTP connection
+        drop(guard);
+        info!("[SENTRY] Shutdown complete");
+    }
+}
+
+/// Capture a critical error to Sentry (blocking startup or core functionality).
+/// Use this ONLY for errors that prevent the application from functioning.
+pub fn capture_critical_error(context: &str, error: &str) {
+    if is_sentry_enabled() {
+        sentry::with_scope(
+            |scope| {
+                scope.set_tag("error_type", "critical");
+                scope.set_tag("context", context);
+                scope.set_level(Some(sentry::Level::Fatal));
+            },
+            || {
+                sentry::capture_message(
+                    &format!("[CRITICAL] {}: {}", context, error),
+                    sentry::Level::Fatal,
+                );
+            },
+        );
+    }
+}
+
+/// Initialize env_logger with Sentry integration.
 pub fn init_logger() {
     let mut builder = env_logger::Builder::from_default_env();
 
@@ -47,6 +127,10 @@ pub fn init_crash_logger() {
 
     std::panic::set_hook(Box::new(move |panic_info| {
         let crash_msg = format_panic_message(panic_info);
+
+        if is_sentry_enabled() {
+            sentry::capture_message(&crash_msg, sentry::Level::Fatal);
+        }
 
         if let Err(e) = write_crash_log(&crash_msg) {
             error!("[CRASH LOGGER] Failed to write crash log: {}", e);
@@ -132,6 +216,18 @@ Thread: {:?}
         error,
         std::thread::current().name().unwrap_or("unnamed")
     );
+
+    if is_sentry_enabled() {
+        sentry::with_scope(
+            |scope| {
+                scope.set_tag("context", context);
+                scope.set_level(Some(sentry::Level::Error));
+            },
+            || {
+                sentry::capture_message(error, sentry::Level::Error);
+            },
+        );
+    }
 
     if let Err(e) = write_crash_log(&message) {
         error!("[CRASH LOGGER] Failed to write critical error: {}", e);

@@ -201,7 +201,7 @@
                           Text="Ready - Configure your mappings and profiles" 
                           Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center"/>
                 <TextBlock Grid.Column="1" x:Name="VersionText" 
-                          Text="v1.0.0" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center"/>
+                          Text="v1.0.1" Foreground="{ThemeResource SubtleForegroundBrush}" VerticalAlignment="Center"/>
             </Grid>
         </Border>
 

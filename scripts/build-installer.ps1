@@ -2,10 +2,10 @@
 # =================================================
 # Compiles the Inno Setup installer
 #
-# Usage: .\scripts\build-installer.ps1 [-Version "1.0.0"]
+# Usage: .\scripts\build-installer.ps1 [-Version "1.0.1"]
 
 Param(
-    [string]$Version = "1.0.0",
+    [string]$Version = "1.0.1",
     [switch]$SkipPreparation
 )
 

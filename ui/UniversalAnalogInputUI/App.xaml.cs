@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UniversalAnalogInputUI.Services;
 using UniversalAnalogInputUI.Services.Interfaces;
 using UniversalAnalogInputUI.Services.Factories;
+using DotNetEnv;
 
 namespace UniversalAnalogInputUI;
 
@@ -43,6 +44,31 @@ public partial class App : Application
 
     public App()
     {
+#if DEBUG
+        AllocConsole();
+        Console.WriteLine("=== Universal Analog Input Debug Console ===");
+        Console.WriteLine("Debug output will appear here...");
+#endif
+
+        // Load or ignore .env file
+        try
+        {
+            DotNetEnv.Env.Load();
+#if DEBUG
+            Console.WriteLine("[DEBUG] .env file loaded successfully");
+#endif
+        }
+        catch
+        {
+            // .env file not found or invalid - ignore
+#if DEBUG
+            Console.WriteLine("[DEBUG] .env file not found or invalid - using environment variables");
+#endif
+        }
+
+        // Uses UI_SENTRY_DSN from .env or environment variables
+        SentryService.Initialize();
+
         EnsureSingleInstance();
         this.InitializeComponent();
 
@@ -50,9 +76,6 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
 #if DEBUG
-        AllocConsole();
-        Console.WriteLine("=== Universal Analog Input Debug Console ===");
-        Console.WriteLine("Debug output will appear here...");
         Console.WriteLine($"Crash log location: {CrashLogger.GetLogFilePath()}");
         Console.WriteLine();
 #endif
@@ -105,6 +128,12 @@ public partial class App : Application
     private void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
     {
         CrashLogger.LogException(e.Exception, "WinUI UnhandledException");
+
+        if (SentryService.IsEnabled)
+        {
+            SentryService.CaptureCriticalError("WinUI UnhandledException", e.Exception);
+        }
+
         e.Handled = true;
     }
 
@@ -113,6 +142,11 @@ public partial class App : Application
         if (e.ExceptionObject is Exception ex)
         {
             CrashLogger.LogException(ex, "AppDomain UnhandledException");
+
+            if (SentryService.IsEnabled)
+            {
+                SentryService.CaptureCriticalError("AppDomain UnhandledException", ex);
+            }
         }
     }
 

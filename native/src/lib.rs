@@ -331,6 +331,9 @@ pub fn cleanup_internal() {
         }
     }
 
+    // Shutdown Sentry
+    logging::shutdown_sentry();
+
     info!("[CLEANUP] Core systems shut down");
 }
 

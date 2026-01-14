@@ -1,6 +1,6 @@
 [package]
 name = "universal-analog-input"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 
 [lib]
@@ -26,6 +26,8 @@ chrono = "0.4"
 tokio = { version = "1.42", features = ["rt-multi-thread", "net", "io-util", "macros", "sync", "time"] }
 log = "0.4"
 env_logger = "0.11"
+sentry = { version = "0.35", features = ["backtrace", "panic", "debug-images"] }
+dotenvy = "0.15"
 
 [dependencies.windows]
 version = "0.62.0"

@@ -38,6 +38,7 @@ Thumbs.db
 # User configuration
 config.json
 profiles/
+.env
 
 # Publish artifacts
 /artifacts/

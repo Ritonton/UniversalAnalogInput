@@ -114,7 +114,7 @@
                 <Border Background="{ThemeResource SurfaceCardBackgroundBrush}"
                         CornerRadius="{ThemeResource ControlCornerRadius}">
                     <toolkit:SettingsExpander
-                        Description="© 2025 Henri DELEMAZURE. All rights reserved."
+                        Description="© 2025-2026 Henri DELEMAZURE. All rights reserved."
                         Header="Universal Analog Input">
                     <TextBlock
                         x:Name="VersionText"

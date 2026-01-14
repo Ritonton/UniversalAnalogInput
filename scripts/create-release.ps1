@@ -1,6 +1,6 @@
 # Create release ZIP for distribution
 Param(
-    [string]$Version = "1.0.0",
+    [string]$Version = "1.0.1",
     [string]$OutputRoot = "artifacts"
 )
 

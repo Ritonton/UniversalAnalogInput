@@ -1,0 +1,170 @@
+======================================================
+                    UNIVERSAL ANALOG INPUT
+                    TERMS OF SERVICE
+======================================================
+
+
+
+Last Updated: January 14, 2026
+
+======================================================
+1. ACCEPTANCE OF TERMS
+======================================================
+
+By downloading, installing, or using Universal Analog Input ("Application"), you agree to be bound by these Terms of Service. If you do not agree to these terms, do not install or use the Application.
+
+======================================================
+2. LICENSE AND USAGE
+======================================================
+
+The Application is provided under the MIT License. You have the right to:
+- Use the software freely for personal or commercial purposes
+- Modify the source code
+- Distribute copies
+- Include it in your own projects
+
+See LICENSE file for full details.
+
+======================================================
+3. ERROR MONITORING AND CRASH REPORTING (SENTRY)
+======================================================
+
+This Application includes AUTOMATIC CRASH REPORTING via Sentry to help me improve stability and fix bugs.
+
+--- 3.1 SENTRY IS ENABLED BY DEFAULT ---
+
+When you download the official release installer:
+- Crash reports are AUTOMATICALLY sent to my Sentry servers when crashes occur
+- The report includes crash details, stack traces, and system information
+- This data helps me identify and fix bugs faster
+
+--- 3.2 WHAT DATA IS SENT ---
+
+AUTOMATICALLY SENT:
+- Application crash information and error messages
+- Stack traces (code location and function names)
+- Application version and operating system version
+- Timestamp of the crash
+- Session information (start/end times)
+
+NOT SENT (PROTECTED):
+- Personal information (names, emails, etc.)
+- Keyboard input or keystroke data
+- Game names, file paths, or personal files
+- URLs you visit or personal settings
+
+--- 3.3 HOW TO DISABLE SENTRY ---
+
+While crash reporting is enabled by default, you can disable it:
+
+METHOD 1 - EDIT .ENV FILE:
+1. Open: %LOCALAPPDATA%\UniversalAnalogInput\.env
+2. Comment out or remove these lines:
+   #UI_SENTRY_DSN=...
+   #NATIVE_SENTRY_DSN=...
+3. Save and restart the application
+
+METHOD 2 - DELETE .ENV FILE:
+1. Delete: %LOCALAPPDATA%\UniversalAnalogInput\.env
+2. The application will run WITHOUT Sentry monitoring
+
+--- 3.4 YOUR DATA RIGHTS ---
+
+You have the right to:
+- Disable Sentry at any time
+- Request deletion of your crash data
+- Access your crash reports
+- See exactly what data was sent
+
+For more details, see PRIVACY_POLICY.md
+
+--- 3.5 DATA PROCESSING AGREEMENT (DPA) ---
+
+For organizations requiring formal data processing agreements:
+- Sentry's complete DPA is available at: https://sentry.io/legal/dpa/
+- This document defines Sentry's obligations as a Data Processor
+- Automatically effective for all Sentry customers (no additional signature needed)
+- See PRIVACY_POLICY.md for more information about data processing
+
+======================================================
+4. DISCLAIMER
+======================================================
+
+THE APPLICATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+======================================================
+5. LIMITATION OF LIABILITY
+======================================================
+
+To the maximum extent permitted by law:
+- I am not responsible for any data loss or damage caused by this software
+- I am not responsible for any harm caused by your use of this software
+- I am not liable for any indirect, incidental, special, or consequential damages
+
+======================================================
+6. THIRD-PARTY SERVICES
+======================================================
+
+This Application integrates with third-party services:
+
+SENTRY - Error Monitoring and Crash Reporting
+- Service: https://sentry.io
+- Privacy Policy: https://sentry.io/privacy/
+- Terms: https://sentry.io/terms/
+- DPA: https://sentry.io/legal/dpa/
+
+WOOTING ANALOG SDK - Capture analog keyboard input
+- GitHub: https://github.com/WootingKb/wooting-analog-sdk
+- Operates LOCALLY - does not transmit data to external servers
+
+VIGEM - Virtual gamepad emulation
+- GitHub: https://github.com/nefarius/ViGEmBus
+- Operates LOCALLY - does not transmit data to external servers
+
+======================================================
+7. OPEN SOURCE
+======================================================
+
+This is an open-source project. You can:
+- View the source code: https://github.com/Ritonton/UniversalAnalogInput
+- Verify what data is sent by reading the code yourself
+- Fork and modify: Create your own version
+- Contribute: Submit improvements
+
+======================================================
+8. GOVERNING LAW
+======================================================
+
+These terms shall be governed by the laws applicable in France, without regard to its conflict of law provisions.
+
+======================================================
+9. ENTIRE AGREEMENT
+======================================================
+
+These Terms of Service, together with the Privacy Policy and License, constitute the entire agreement between you and me regarding the use of the Application.
+
+======================================================
+QUICK SUMMARY
+======================================================
+
+LICENSE:           MIT - Free to use, modify, and distribute
+WARRANTY:          NONE - Provided "as-is"
+CRASH REPORTS:     ENABLED by default, can be DISABLED
+DATA PRIVACY:      NO PERSONAL INFORMATION collected by default
+USER CONTROL:      Can disable, access, or delete data anytime
+OPEN SOURCE:       Yes - View source code anytime
+DPA:               Available at https://sentry.io/legal/dpa/
+
+======================================================
+
+BY INSTALLING THIS APPLICATION, YOU ACKNOWLEDGE THAT YOU HAVE READ AND AGREE TO THESE TERMS OF SERVICE.
+
+For questions or concerns:
+- Open an Issue: https://github.com/Ritonton/UniversalAnalogInput/issues
+- Ask Questions: Create an issue with the "question" label
+
+PLEASE ALSO READ: PRIVACY_POLICY.md
+
+======================================================

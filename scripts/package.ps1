@@ -130,7 +130,7 @@ USER DATA LOCATIONS:
 For support and updates, visit:
 https://github.com/Ritonton/UniversalAnalogInput
 
-© 2024 - Licensed under MIT
+© 2026 - Licensed under MIT
 '@
 $readmeContent | Out-File -FilePath $readmePath -Encoding UTF8
 Write-Host "  [OK] Documentation: README.txt" -ForegroundColor Green

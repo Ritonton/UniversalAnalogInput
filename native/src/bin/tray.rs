@@ -49,9 +49,27 @@ const TRAY_INSTANCE_MUTEX: &str = "Global\\UniversalAnalogInput_Tray";
 const TRAY_SHOW_UI_EVENT: &str = "Global\\UniversalAnalogInput_Tray_ShowUI";
 
 fn main() {
+    // Load or ignore .env file
+    let _ = dotenvy::dotenv();
+
     // Initialize logging
     universal_analog_input::logging::init_logger();
     universal_analog_input::logging::init_crash_logger();
+
+    // Initialize Sentry monitoring from .env file or environment variables
+    // Priority: .env file > system environment variables
+    // Native component uses NATIVE_SENTRY_DSN (separate from UI component)
+    if let Ok(dsn) = std::env::var("NATIVE_SENTRY_DSN") {
+        let environment = std::env::var("SENTRY_ENVIRONMENT").ok();
+        if universal_analog_input::api::logging::init_sentry(
+            Some(&dsn),
+            environment.as_deref(),
+        ) {
+            info!("[TRAY] Sentry monitoring initialized (native) - Environment: {:?}", environment);
+        }
+    } else {
+        info!("[TRAY] Sentry monitoring disabled (no NATIVE_SENTRY_DSN configured)");
+    }
 
     // Enforce single tray instance (prevents IPC corruption)
     let _single_instance_guard = match SingleInstanceGuard::acquire(TRAY_INSTANCE_MUTEX) {
@@ -64,7 +82,12 @@ fn main() {
             return;
         }
         Err(err) => {
+            let error_msg = format!("{}", err);
             error!("[TRAY] Impossible de vérifier l'instance active: {}", err);
+            universal_analog_input::api::logging::capture_critical_error(
+                "Tray Instance Check",
+                &error_msg,
+            );
             show_error_dialog(
                 "Erreur système",
                 "Impossible de vérifier si le tray est déjà lancé. Merci de réessayer.",
@@ -100,6 +123,10 @@ fn main() {
     // This runs in parallel with IPC server setup
     if let Err(e) = initialize_library() {
         error!("[TRAY] Failed to initialize library: {}", e);
+        universal_analog_input::api::logging::capture_critical_error(
+            "Library Initialization",
+            &e,
+        );
         show_error_dialog("Initialization Error", &e);
         return;
     }
@@ -271,7 +298,12 @@ fn run_ipc_server() {
     let server = match universal_analog_input::ipc::IpcServer::new().map(Arc::new) {
         Ok(s) => s,
         Err(e) => {
+            let error_msg = format!("{}", e);
             error!("[IPC] Failed to create IPC server: {}", e);
+            universal_analog_input::api::logging::capture_critical_error(
+                "IPC Server Creation",
+                &error_msg,
+            );
             return;
         }
     };

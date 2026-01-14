@@ -53,8 +53,8 @@ Universal Analog Input solves this problem by converting your analog keyboard in
 
 | Feature | Description |
 |---------|-------------|
-| **Analog Input Capture** | Integration with Wooting Analog SDK to capture precise analog input values |
-| **Virtual Gamepad Emulation** | ViGEm-powered Xbox controller emulation |
+| **Analog Input Capture** | Integration with [Wooting Analog SDK](https://github.com/WootingKb/wooting-analog-sdk) to capture precise analog input values |
+| **Virtual Gamepad Emulation** | [ViGEm](https://github.com/nefarius/ViGEmBus)-powered Xbox controller emulation |
 | **Flexible Key Mapping** | Map any analog keyboard key to gamepad sticks, triggers, or buttons |
 | **Response Curves** | Choose from linear or custom interpolated response curves |
 | **Dead Zone Configuration** | Inner and outer dead zones for precise control calibration |
@@ -62,6 +62,7 @@ Universal Analog Input solves this problem by converting your analog keyboard in
 | **Sub-Profile System** | Multiple mapping sets per game for different situations (driving, walking, etc.) |
 | **Hotkey Switching** | Instantly switch between sub-profiles during gameplay |
 | **Real-time Visualization** | Live input monitoring in the "Tester" tab |
+| **Error Monitoring** | Optional [Sentry](https://sentry.io) integration for crash reports and stability metrics |
 
 ### Advanced Features
 
@@ -397,6 +398,40 @@ For information about third-party dependencies and their licenses, see [THIRD_PA
 
 - **Xbox Controller Emulation Only**: This application currently only supports Xbox-style controller emulation via ViGEm. PlayStation and other controller types are not supported yet
 - **Game Compatibility**: Your game must support Xbox controllers for this application to work
+
+<br/>
+
+## Privacy & Telemetry
+
+Universal Analog Input includes **optional** error monitoring and crash reporting via [Sentry](https://sentry.io).
+
+### Built from Source (Open-Source)
+
+If you **build from source**:
+- Sentry is **disabled by default** - you must set a DSN in the `.env` file to enable it
+- Set `UI_SENTRY_DSN` and `NATIVE_SENTRY_DSN` environment variables to enable monitoring
+- Leave them empty or unset to disable completely
+
+### Official Releases (Distributed Binary)
+
+If you **download the official release installer**:
+- Sentry is **enabled by default** to help improve stability and fix bugs faster
+- **No personal information (PII) is collected** (`send_default_pii: false`)
+- Crash reports are sent to Sentry servers only when crashes occur
+- You can **disable Sentry at any time** by editing or removing the `.env` file (see below)
+
+### How to Disable Sentry in Official Release
+
+Edit `%LOCALAPPDATA%\UniversalAnalogInput\.env`:
+```bash
+# Comment out or remove these lines to disable Sentry:
+#UI_SENTRY_DSN=...
+#NATIVE_SENTRY_DSN=...
+```
+
+Or simply delete the `.env` file entirely, the application will run without Sentry monitoring.
+
+For full details, see [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md).
 
 <br/>
 

@@ -166,6 +166,10 @@ impl EventInputManager {
 
                 if hook.is_null() {
                     error!("[INPUT] Failed to install keyboard hook");
+                    crate::api::logging::capture_critical_error(
+                        "Keyboard Hook Installation",
+                        "SetWindowsHookExW returned null - input system cannot function",
+                    );
                     HOOK_CONTEXT_PTR.store(std::ptr::null_mut(), AtomicOrdering::SeqCst);
                     let _ = Box::from_raw(hook_context);
                     return;

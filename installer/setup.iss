@@ -9,7 +9,7 @@
 ; Build command: iscc installer\setup.iss
 
 #define AppName "Universal Analog Input"
-#define AppVersion "1.0.0"
+#define AppVersion "1.0.1"
 #define AppPublisher "Henri DELEMAZURE"
 #define AppURL "https://github.com/Ritonton/UniversalAnalogInput"
 #define AppExeName "UniversalAnalogInput.exe"
@@ -24,7 +24,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}/issues
 AppUpdatesURL={#AppURL}/releases
-AppCopyright=Copyright (C) 2024 {#AppPublisher}
+AppCopyright=Copyright (C) 2025-2026 {#AppPublisher}
 
 ; Installation directories
 DefaultDirName={autopf}\{#AppName}
@@ -76,6 +76,9 @@ WizardSmallImageFileDynamicDark=images\wizard-small-dark.png
 ; Welcome and Finish page customization
 DisableWelcomePage=no
 DisableFinishedPage=no
+
+; License/Terms of Service page
+LicenseFile=TERMS_OF_SERVICE.txt
 
 ; Language
 ShowLanguageDialog=auto
@@ -160,9 +163,15 @@ Source: "..\artifacts\package\ui\*"; DestDir: "{app}\ui"; Flags: ignoreversion r
 ; Default profile template
 Source: "..\artifacts\package\profiles\*"; DestDir: "{app}\profiles"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 
-; Documentation
+; Documentation and Legal
 Source: "..\artifacts\package\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: core
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion; Components: core
+Source: "..\TERMS_OF_SERVICE.md"; DestDir: "{app}"; Flags: ignoreversion; Components: core
+Source: "..\PRIVACY_POLICY.md"; DestDir: "{app}"; Flags: ignoreversion; Components: core
+Source: "..\THIRD_PARTY_LICENSES.md"; DestDir: "{app}"; Flags: ignoreversion; Components: core
+
+; Sentry Configuration (Crash Reporting)
+Source: "..\deploy\.env"; DestDir: "{app}"; DestName: ".env"; Flags: ignoreversion; Components: core
 
 ; Dependency installers (downloaded by prepare-installer.ps1)
 Source: "dependencies\ViGEmBus_*.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall; Components: deps\vigem; Check: not IsViGEmInstalled

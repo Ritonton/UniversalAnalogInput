@@ -50,6 +50,13 @@ Universal Analog Input is licensed under the MIT License. All dependencies liste
 |------------|---------|---------|--------|
 | winres | 0.1 | MIT | [crates.io](https://crates.io/crates/winres) |
 
+### Monitoring & Crash Reporting
+
+| Dependency | Version | License | Source |
+|------------|---------|---------|--------|
+| sentry | 0.32 | MIT OR Apache-2.0 | [crates.io](https://crates.io/crates/sentry) |
+| dotenvy | 0.15 | MIT OR Apache-2.0 | [crates.io](https://crates.io/crates/dotenvy) |
+
 ## C# / .NET Dependencies
 
 | Dependency | Version | License | Source |
@@ -58,6 +65,8 @@ Universal Analog Input is licensed under the MIT License. All dependencies liste
 | CommunityToolkit.WinUI.Controls.Sizers | 8.2.250402 | MIT | [NuGet](https://www.nuget.org/packages/CommunityToolkit.WinUI.Controls.Sizers) |
 | Microsoft.Extensions.DependencyInjection | 9.0.0 | MIT | [NuGet](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection) |
 | System.Text.Json | 9.0.0 | MIT | [NuGet](https://www.nuget.org/packages/System.Text.Json) |
+| Sentry.Serilog | 5.14 | MIT | [NuGet](https://www.nuget.org/packages/Sentry) |
+| DotNetEnv | 3.1.2 | MIT | [NuGet](https://www.nuget.org/packages/DotNetEnv) |
 
 ## Required Drivers
 
@@ -106,4 +115,40 @@ For the complete text of each license, please refer to the respective project re
 
 ---
 
-**Last Updated**: 2025-12-05
+## External Services
+
+### Sentry - Error Monitoring and Release Health
+
+**Service**: Sentry Error Tracking
+**Purpose**: Crash reporting, error monitoring, and release health metrics
+**License**: Sentry EULA (https://sentry.io/terms/)
+**Privacy**: https://sentry.io/privacy/
+**DPA**: https://sentry.io/legal/dpa/
+**Data Handling**: Crashes and errors are sent to Sentry servers with `send_default_pii: false` by default
+
+#### Status in This Project
+
+**Built from Source (Open-Source Development)**:
+- Sentry is **optional and disabled by default**
+- Data transmission requires explicit configuration (setting DSN environment variables)
+- Can be disabled entirely by not providing a Sentry DSN in `.env`
+
+**Official Releases (Distributed Binary)**:
+- Sentry is **optional but enabled by default** to improve stability and monitor release health
+- Uses production DSN keys from `deploy/.env`
+- **No personal information (PII) is collected** - only crash data, stack traces, version, and OS info
+- Users can disable Sentry at any time by editing or deleting the `.env` file
+- See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md) for details
+
+#### User Control
+
+Both users and developers have full control over Sentry:
+- **Built from Source**: Don't set DSN → no Sentry
+- **Official Release**: Edit/delete `.env` → no Sentry
+- **Re-enable Anytime**: Restore `.env` with DSN → Sentry active again
+
+No personal data is collected without explicit configuration or user consent.
+
+---
+
+**Last Updated**: 2026-01-14
