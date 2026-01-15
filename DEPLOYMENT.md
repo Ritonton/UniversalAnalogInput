@@ -58,7 +58,7 @@ The installer automatically:
 - Creates Start Menu shortcuts
 - Adds uninstaller to Windows Programs & Features
 
-Latest release: [v1.0.0](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
+Latest release: [v1.0.1](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
 
 **Manual ZIP Distribution**
 
