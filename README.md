@@ -47,6 +47,12 @@ Universal Analog Input solves this problem by converting your analog keyboard in
 
 <br/>
 
+## Video Demo
+
+https://github.com/user-attachments/assets/36757e45-80f2-4242-9abb-7bc620788564
+
+<br/>
+
 ## Features
 
 ### Core Capabilities
@@ -86,7 +92,7 @@ Before installing Universal Analog Input, ensure you have:
 
 **Installer (Recommended)**
 
-Download the latest installer: [UniversalAnalogInput-Setup-v1.0.0.exe](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
+Download the latest installer: [UniversalAnalogInput-Setup-v1.0.1.exe](https://github.com/Ritonton/UniversalAnalogInput/releases/latest)
 
 The installer automatically handles:
 - Universal Analog Input application installation
@@ -95,15 +101,17 @@ The installer automatically handles:
 - Start Menu shortcuts
 - Clean uninstallation utility
 
-**Build from Source**
+<details>
+<summary><b>Build from Source</b></summary>
 
 Alternatively, you can build from source:
 
-Requirements:
+**Requirements:**
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Rust toolchain](https://rustup.rs/)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) with Windows App SDK (optional, for UI development)
 
+**Build Steps:**
 ```bash
 # Clone the repository
 git clone https://github.com/Ritonton/UniversalAnalogInput.git
@@ -117,6 +125,8 @@ cd universal-analog-input
 
 # The executable will be in the output directory
 ```
+
+</details>
 
 <br/>
 
@@ -178,6 +188,9 @@ cd universal-analog-input
 
 Universal Analog Input uses a hybrid architecture separating the core engine from the user interface.
 
+<details>
+<summary><b>Architecture Details</b></summary>
+
 ### Component Overview
 
 ```
@@ -228,11 +241,12 @@ Universal Analog Input uses a hybrid architecture separating the core engine fro
 - [WinUI 3](https://docs.microsoft.com/windows/apps/winui/) - Modern Windows interface
 - Rust + C# IPC - Separate processes communicating via Windows named pipes (JSON payloads)
 
+</details>
+
 <br/>
 
-## Development
-
-### Project Structure
+<details>
+<summary><b>Project Structure</b></summary>
 
 ```
 universal-analog-input/
@@ -268,7 +282,12 @@ universal-analog-input/
     └── create-release.ps1       # Release creation script
 ```
 
-### Building the Project
+</details>
+
+## Development
+
+<details>
+<summary><b>Building the Project</b></summary>
 
 **Quick Build (Development)**
 ```powershell
@@ -298,7 +317,10 @@ dotnet build
 2. Set configuration to `x64 | Release`
 3. Build and run with F5
 
-### Development Commands
+</details>
+
+<details>
+<summary><b>Development Commands</b></summary>
 
 **Rust Development**
 ```bash
@@ -316,6 +338,8 @@ dotnet build         # Build solution
 dotnet run           # Run application
 dotnet clean         # Clean artifacts
 ```
+
+</details>
 
 <br/>
 
@@ -405,6 +429,9 @@ For information about third-party dependencies and their licenses, see [THIRD_PA
 
 Universal Analog Input includes **optional** error monitoring and crash reporting via [Sentry](https://sentry.io).
 
+<details>
+<summary><b>Detailed Privacy Information</b></summary>
+
 ### Built from Source (Open-Source)
 
 If you **build from source**:
@@ -432,6 +459,8 @@ Edit `%LOCALAPPDATA%\UniversalAnalogInput\.env`:
 Or simply delete the `.env` file entirely, the application will run without Sentry monitoring.
 
 For full details, see [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_SERVICE.md](TERMS_OF_SERVICE.md).
+
+</details>
 
 <br/>
 
