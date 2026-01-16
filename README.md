@@ -47,6 +47,21 @@ Universal Analog Input solves this problem by converting your analog keyboard in
 
 <br/>
 
+In game experience :
+
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/c704c4b6-6137-46de-9472-43bbd33500da#gh-dark-mode-only"
+    alt="Dark-Transparent-Explanation"
+  />
+  <img
+    src="https://github.com/user-attachments/assets/c06bc6af-cd7f-4a1f-b06d-4855062288ba#gh-light-mode-only"
+    alt="Light-Explanation"
+  />
+</p>
+
+<br/>
+
 ## Video Demo
 
 https://github.com/user-attachments/assets/36757e45-80f2-4242-9abb-7bc620788564
