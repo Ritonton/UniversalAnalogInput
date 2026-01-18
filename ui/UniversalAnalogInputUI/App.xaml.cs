@@ -12,7 +12,7 @@ namespace UniversalAnalogInputUI;
 
 public partial class App : Application
 {
-    private const string UiInstanceMutexName = "Global\\UniversalAnalogInput_UI";
+    private const string UiInstanceMutexName = "Local\\UniversalAnalogInput_UI";
     private const uint MbIconWarning = 0x00000030;
     private static Mutex? _singleInstanceMutex;
 

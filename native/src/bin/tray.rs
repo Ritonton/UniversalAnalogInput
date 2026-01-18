@@ -45,8 +45,8 @@ enum IpcState {
 /// Signal to wake IPC thread when UI should be launched
 static IPC_WAKE_SIGNAL: Mutex<bool> = Mutex::new(false);
 static IPC_WAKE_CONDVAR: Condvar = Condvar::new();
-const TRAY_INSTANCE_MUTEX: &str = "Global\\UniversalAnalogInput_Tray";
-const TRAY_SHOW_UI_EVENT: &str = "Global\\UniversalAnalogInput_Tray_ShowUI";
+const TRAY_INSTANCE_MUTEX: &str = "Local\\UniversalAnalogInput_Tray";
+const TRAY_SHOW_UI_EVENT: &str = "Local\\UniversalAnalogInput_Tray_ShowUI";
 
 fn main() {
     // Load or ignore .env file
