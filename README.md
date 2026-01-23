@@ -208,30 +208,44 @@ Universal Analog Input uses a hybrid architecture separating the core engine fro
 
 ### Component Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│              WinUI 3 Configuration Interface (C#)           │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │ Profile      │  │  Key Mapping │  │  Real-time   │       │
-│  │ Management   │  │    Editor    │  │    Tester    │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-└─────────────────────────────────────────────────────────────┘
-                            │
-                       IPC (Named Pipes)
-                            │
-┌─────────────────────────────────────────────────────────────┐
-│              Rust Core Engine (System Tray)                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   Wooting    │  │   Mapping    │  │    ViGEm     │       │
-│  │   Analog     │→ │   Engine     │→ │   Gamepad    │       │
-│  │     SDK      │  │              │  │  Emulation   │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-│                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
-│  │   Profile    │  │    Hotkey    │  │   Response   │       │
-│  │  Management  │  │   Manager    │  │    Curves    │       │
-│  └──────────────┘  └──────────────┘  └──────────────┘       │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph UI["WinUI 3 Config UI (C#)"]
+        PM["Profile<br/>Management"]
+        KM["Key Mapping<br/>Editor"]
+        RT["Real-time<br/>Tester"]
+
+        PM --- KM --- RT
+    end
+
+    IPC["IPC (Named Pipes)"]
+
+    subgraph Core["Rust Core Engine (System Tray)"]
+        WA["Wooting<br/>Analog SDK"] --> ME["Mapping<br/>Engine"]
+        ME --> VG["ViGEm<br/>Gamepad<br/>Emulation"]
+
+        PM2["Profile<br/>Management"]
+        HM["Hotkey<br/>Manager"]
+        RC["Response<br/>Curves"]
+
+        PM2 --- HM --- RC
+    end
+
+    UI <-->|JSON Payloads| IPC
+    IPC <-->|JSON Payloads| Core
+
+    style UI fill:#4a90e2,stroke:#2e5c8a,stroke-width:2px,color:#fff
+    style Core fill:#e67e22,stroke:#a85819,stroke-width:2px,color:#fff
+    style IPC fill:#95a5a6,stroke:#7f8c8d,stroke-width:2px,color:#fff
+    style WA fill:#27ae60,stroke:#1e8449,color:#fff
+    style ME fill:#e74c3c,stroke:#c0392b,color:#fff
+    style VG fill:#9b59b6,stroke:#7d3c98,color:#fff
+
+    linkStyle 0 stroke:transparent
+    linkStyle 1 stroke:transparent
+    linkStyle 4 stroke:transparent
+    linkStyle 5 stroke:transparent
+
 ```
 
 ### Technology Stack
