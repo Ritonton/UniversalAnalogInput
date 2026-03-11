@@ -102,14 +102,13 @@ fn main() {
         error!("[TRAY] Failed to start UI signal listener: {}", e);
     }
 
-    // ===== OPTIMIZATION: Pre-cache UI path BEFORE any I/O =====
-    // This happens in < 1ms and avoids searching later
+    // Pre-cache UI path before any input/output
     handler::cache_ui_path();
 
     info!("[TRAY] Initializing Rust core library...");
 
-    // ===== OPTIMIZATION: Parallel initialization =====
-    // Spawn IPC server thread BEFORE library init (they're independent)
+    // Parallel initialization
+    // Spawn IPC server thread before library init because they're independent
     let _ipc_thread = thread::spawn(|| {
         run_ipc_server();
     });

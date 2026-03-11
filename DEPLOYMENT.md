@@ -186,8 +186,6 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 - [ ] Sign installer (optional, for trusted publisher status)
 - [ ] Upload precompiled installer to GitHub Releases
 
-**Note**: The Inno Setup script is not included in the public repository. Only the precompiled installer binary (`UniversalAnalogInput-Setup-v*.exe`) is distributed via GitHub Releases.
-
 ## Technical Notes
 
 ### Static Linking

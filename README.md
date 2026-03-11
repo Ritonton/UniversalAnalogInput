@@ -23,6 +23,12 @@
   <a href="#contributing">Contributing</a>
 </h3>
 
+<p align="center">
+  <a href="https://www.rust-lang.org"><img src="https://img.shields.io/badge/Rust%20Inside-%23000000?style=for-the-badge&logo=rust&logoColor=white" alt="Rust Inside" /></a>
+  <img src="https://img.shields.io/badge/platform-Windows-0078d4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+  <img src="https://img.shields.io/badge/UI-WinUI%203-0078d4?style=for-the-badge&logo=microsoft&logoColor=white" alt="WinUI 3" />
+</p>
+
 <br/>
 
 ## Overview
@@ -150,13 +156,13 @@ cd universal-analog-input
 ### Quick Start Guide
 
 1. **Connect Your Analog Keyboard**
-   - Ensure it's detected by the Wooting software or plugin system
-   - Verify analog mode is enabled
+   - Plug in your keyboard before launching the app
 
 2. **Launch Universal Analog Input**
    - Run `UniversalAnalogInput.exe`
    - The system tray icon will appear
    - The configuration interface opens automatically on first run
+   - Verify your keyboard is detected in the app
 
 3. **Create Your First Profile**
    - Click "New Profile" to create a game configuration
@@ -179,12 +185,15 @@ cd universal-analog-input
    - Launch your game (it must support Xbox-style controllers)
    - The mapping runs in the background via the system tray
 
+> [!IMPORTANT]
+> **Avoid key conflicts in your game's settings.** When UAI is active, your analog keys are translated into gamepad inputs. If your game also has those same keyboard keys bound to an action, the game will receive *both* a gamepad signal and a keyboard signal on the same action simultaneously, causing erratic behavior. To prevent this, go to your game's key bindings and **unbind any key you have mapped in UAI** (set it to "None"), or reassign it to an unused key.
+
 ### Profile Management
 
 **Creating Sub-Profiles**
 - Sub-profiles are different mapping sets within a single game profile
 - Use them for different situations in the same game (e.g., driving vs. walking, flight vs. ground combat)
-- Example: Racing game with "Racing" and "Menu Navigation" sub-profiles
+- Example: GTA V with "On Foot" and "Driving" sub-profiles
 - Assign hotkeys to quickly switch between sub-profiles during gameplay
 
 **Import/Export Profiles**
@@ -202,6 +211,51 @@ cd universal-analog-input
 ## Architecture
 
 Universal Analog Input uses a hybrid architecture separating the core engine from the user interface.
+
+<details>
+<summary><b>Analog Data Flow</b></summary>
+
+### From Key Press to Game Input
+
+```mermaid
+flowchart LR
+    KB["Analog Keyboard (Hall Effect switches 0.0–1.0 per key)"]
+
+    subgraph BRIDGE["Non-Wooting keyboards"]
+        direction TB
+        UAP["Universal Analog Plugin by AnalogSense"]
+    end
+
+    WSDK["Wooting Analog SDK (unified analog API)"]
+
+    subgraph UAI["Universal Analog Input"]
+        direction TB
+        DZ["Dead Zone Filter (inner & outer)"]
+        RC["Response Curve (linear or custom)"]
+        MAP["Key to Gamepad Mapping"]
+        DZ --> RC --> MAP
+    end
+
+    VIGEM["ViGEm Bus Driver (virtual Xbox controller)"]
+    GAME["Game (XInput or DirectInput)"]
+
+    KB -->|"raw analog values"| UAP
+    UAP -->|"normalized values"| WSDK
+    KB -->|"Wooting native direct path"| WSDK
+    WSDK -->|"per-key analog values"| UAI
+    UAI -->|"gamepad axis or button state"| VIGEM
+    VIGEM -->|"virtual controller"| GAME
+
+    style BRIDGE fill:#555,stroke:#888,stroke-width:1px,stroke-dasharray:4 4,color:#ccc
+    style UAI fill:#e67e22,stroke:#a85819,stroke-width:2px,color:#fff
+    style VIGEM fill:#9b59b6,stroke:#7d3c98,color:#fff
+    style WSDK fill:#27ae60,stroke:#1e8449,color:#fff
+    style GAME fill:#4a90e2,stroke:#2e5c8a,color:#fff
+```
+
+The **Universal Analog Plugin** is only needed for non-Wooting keyboards. Wooting keyboards communicate directly with the Wooting Analog SDK. In both cases, UAI receives the same normalized per-key values (0.0 – 1.0), applies dead zones and response curves, and forwards the result to ViGEm as a virtual Xbox controller that the game sees as a real gamepad.
+
+</details>
 
 <details>
 <summary><b>Architecture Details</b></summary>
@@ -407,6 +461,49 @@ Contributions are welcome! Here's how you can help:
 
 <br/>
 
+## Compatible Hardware
+
+Universal Analog Input works with two categories of devices depending on whether the [Universal Analog Plugin](https://github.com/AnalogSense/universal-analog-plugin) by AnalogSense is installed.
+
+### Without Universal Analog Plugin — Wooting keyboards only
+
+| Keyboard |
+|----------|
+| All Wooting keyboards with analog mode |
+
+### With Universal Analog Plugin — extended compatibility
+
+The plugin bridges third-party analog keyboards to the Wooting Analog SDK, enabling support for all devices below.
+
+| Keyboard | Notes |
+|----------|-------|
+| Razer Huntsman V2 Analog | [R] |
+| Razer Huntsman Mini Analog | [R] |
+| Razer Huntsman V3 Pro | [R] |
+| Razer Huntsman V3 Pro Mini | [R] |
+| Razer Huntsman V3 Pro Tenkeyless | [R] |
+| NuPhy HE-series keyboards *(Hall Effect line only)* | |
+| DrunkDeer (all models) | |
+| Keychron Q1 HE | [P] [F] |
+| Keychron Q3 HE | [P] [F] |
+| Keychron Q5 HE | [P] [F] |
+| Keychron K2 HE | [P] [F] |
+| Lemokey P1 HE | [P] [F] |
+| Madlions MAD60 HE | [P] |
+| Madlions MAD68 HE | [P] |
+| Madlions MAD68R | [P] |
+
+**Notes:**
+
+- **[R]** Razer Synapse must be installed and running for analog inputs to be received from this keyboard.
+- **[P]** The official firmware only supports polling, which can lead to lag and missed inputs.
+- **[F]** [Custom firmware with full analog report functionality is available.](https://analogsense.org/firmware/)
+
+> [!NOTE]
+> For NuPhy, only keyboards in the **HE (Hall Effect) line** are supported — not all NuPhy keyboards. These are the models equipped with Hall Effect switches and the appropriate motherboard for analog output.
+
+<br/>
+
 ## System Requirements
 
 ### Minimum Requirements
@@ -443,7 +540,7 @@ For information about third-party dependencies and their licenses, see [THIRD_PA
 
 ## Known Issues
 
-- **WinUI 3 Crashes on Certain Keyboards**: Some keyboard layouts can cause the configuration interface to crash when typing in text fields. This is a known WinUI 3 framework bug tracked here: [microsoft/microsoft-ui-xaml#10894](https://github.com/microsoft/microsoft-ui-xaml/issues/10894)
+- **NavigationView crash when modifying profiles**: Adding or deleting profiles can trigger a COMException (0x80004005) in WinUI 3's NavigationView control. This is a known framework bug where dynamically clearing and re-adding navigation items corrupts the internal pane binding, causing the navigation pane to freeze. Tracked here: [microsoft/microsoft-ui-xaml#10894](https://github.com/microsoft/microsoft-ui-xaml/issues/10894)
 
 <br/>
 
