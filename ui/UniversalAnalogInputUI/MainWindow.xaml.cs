@@ -255,6 +255,16 @@ public sealed partial class MainWindow : Window
                 _statusMonitorService.AppendLiveInput("Digital button system initialized.");
             });
 
+            // Show welcome dialog after IPC is connected, before dependency check
+            if (Dialogs.WelcomeDialog.ShouldShow())
+            {
+                await DispatcherQueue.EnqueueAsync(async () =>
+                {
+                    var welcome = new Dialogs.WelcomeDialog { XamlRoot = this.Content.XamlRoot };
+                    await welcome.ShowAsync();
+                });
+            }
+
             await CheckDependenciesAsync();
 
             await _profileService.RefreshProfilesAsync();

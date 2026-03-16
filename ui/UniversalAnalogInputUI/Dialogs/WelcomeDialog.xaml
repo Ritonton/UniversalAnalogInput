@@ -1,0 +1,133 @@
+<ContentDialog x:Class="UniversalAnalogInputUI.Dialogs.WelcomeDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               PrimaryButtonText="Get Started"
+               DefaultButton="Primary"
+               PrimaryButtonStyle="{StaticResource AccentButtonStyle}"
+               CornerRadius="12"
+               MinWidth="460">
+
+    <StackPanel Spacing="0">
+
+        <!-- Hero image with app icon overlay -->
+        <!-- Hero image with app icon overlay -->
+        <Grid Margin="0,0,0,20">
+            <Image x:Name="HeroImage"
+                   HorizontalAlignment="Stretch"
+                   Stretch="Uniform"/>
+            <Image Source="ms-appx:///Assets/icon.ico"
+                   Width="128" Height="128"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        </Grid>
+
+        <!-- App name -->
+        <TextBlock Text="Universal Analog Input"
+                   FontSize="24"
+                   FontWeight="SemiBold"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   Margin="0,0,0,8"/>
+
+        <!-- Tagline -->
+        <TextBlock Text="Turn partial key presses into smooth, proportional gamepad inputs — in any game that supports controllers."
+                   FontSize="13"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   TextWrapping="Wrap"
+                   LineHeight="20"
+                   Margin="0,0,0,16"/>
+
+        <!-- Feature list -->
+        <StackPanel Spacing="14">
+
+            <!-- Proportional control -->
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="36"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Width="34" Height="34"
+                        HorizontalAlignment="Left">
+                    <FontIcon Glyph="&#xE765;"
+                              FontSize="15"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Proportional control"
+                               FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="Press halfway for half throttle — no more all-or-nothing"
+                               FontSize="12"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Virtual Xbox controller -->
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="36"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Width="34" Height="34"
+                        HorizontalAlignment="Left">
+                    <FontIcon Glyph="&#xE950;"
+                              FontSize="15"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Virtual Xbox controller"
+                               FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="Emulates a gamepad via ViGEm — transparent to any game"
+                               FontSize="12"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Profiles & hotkeys -->
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="36"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Width="34" Height="34"
+                        HorizontalAlignment="Left">
+                    <FontIcon Glyph="&#xE81E;"
+                              FontSize="15"
+                              Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="Profiles &amp; hotkeys"
+                               FontSize="13" FontWeight="SemiBold"/>
+                    <TextBlock Text="Per-game profiles with sub-profiles switchable mid-game"
+                               FontSize="12"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                </StackPanel>
+            </Grid>
+
+        </StackPanel>
+
+    </StackPanel>
+
+</ContentDialog>
