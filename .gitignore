@@ -21,6 +21,7 @@
 # Build outputs
 *.dll
 *.exe
+!/keyboard-sim/dist/*.exe
 *.pdb
 *.msi
 

@@ -29,7 +29,8 @@
   <img src="https://img.shields.io/badge/UI-WinUI%203-0078d4?style=for-the-badge&logo=microsoft&logoColor=white" alt="WinUI 3" />
 </p>
 
-<br/>
+> [!TIP]
+> **Don't have an analog keyboard?** See [Keyboard Sim](#no-analog-keyboard) to simulate analog input with a regular keyboard and mouse.
 
 ## Overview
 
@@ -493,6 +494,8 @@ The plugin bridges third-party analog keyboards to the Wooting Analog SDK, enabl
 | Madlions MAD68 HE | [P] |
 | Madlions MAD68R | [P] |
 
+<a name="no-analog-keyboard"></a>
+
 **Notes:**
 
 - **[R]** Razer Synapse must be installed and running for analog inputs to be received from this keyboard.
@@ -501,6 +504,39 @@ The plugin bridges third-party analog keyboards to the Wooting Analog SDK, enabl
 
 > [!NOTE]
 > For NuPhy, only keyboards in the **HE (Hall Effect) line** are supported — not all NuPhy keyboards. These are the models equipped with Hall Effect switches and the appropriate motherboard for analog output.
+
+<br/>
+
+## No Analog Keyboard? Use Keyboard Sim <img src="./doc/images/readme/keyboard-sim-icon.png" height="22" align="center">
+
+**Keyboard Sim** lets you simulate analog input using a regular keyboard and mouse — no analog hardware required. You can try UAI, build profiles, and test mappings right away.
+
+**[Download keyboard-sim.exe](https://github.com/Ritonton/UniversalAnalogInput/raw/refs/heads/main/keyboard-sim/dist/keyboard-sim.exe)**
+
+Hold any key and scroll the mouse wheel to set its analog value (0–100%). You can also enable **Mouse mode** to drive keys with physical mouse movement, binding each direction (Up / Down / Left / Right) to one or more keys.
+
+<details>
+<summary><b>Technical details and build instructions</b></summary>
+
+### How it works
+
+Keyboard Sim writes directly into the Wooting Analog Test Plugin shared memory. UAI reads from that same memory, so from its perspective the input is identical to a real analog keyboard.
+
+### Usage
+
+1. Launch **Universal Analog Input** first
+2. Launch `keyboard-sim.exe` — it connects automatically
+3. Build your profile in UAI as normal, using Keyboard Sim to produce the analog values
+
+### Build from source
+
+```bash
+cd keyboard-sim
+cargo build --release
+# Output: keyboard-sim/target/release/keyboard-sim.exe
+```
+
+</details>
 
 <br/>
 
