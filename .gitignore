@@ -1,7 +1,9 @@
 # Rust
 /native/target/
 /target/
+/keyboard-sim/target/
 /Cargo.lock
+/keyboard-sim/Cargo.lock
 
 # .NET
 /ui/**/bin/
