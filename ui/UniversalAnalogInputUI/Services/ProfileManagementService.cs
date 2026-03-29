@@ -278,31 +278,19 @@ public class ProfileManagementService : IProfileManagementService, INotifyProper
     {
         return Task.Run<(bool Success, GameProfile? Profile, SubProfile? SubProfile)>(() =>
         {
-            uint profileCount = _rustService.GetProfileMetadataCount();
-            if (profileCount == 0)
+            var (profileIdBytes, subProfileIdBytes) = _rustService.GetActiveProfileIds();
+            if (profileIdBytes == null || subProfileIdBytes == null
+                || profileIdBytes.Length < 16 || subProfileIdBytes.Length < 16)
                 return (Success: false, Profile: null, SubProfile: null);
 
-            if (_rustService.GetProfileMetadata(0, out var pinfo) == 0)
-            {
-                var profileId = RustDataConverter.DecodeGuid(pinfo.Id);
-                var profileName = RustDataConverter.DecodeUtf8(pinfo.Name);
+            var profileId = new Guid(profileIdBytes);
+            var subProfileId = new Guid(subProfileIdBytes);
 
-                for (uint si = 0; si < pinfo.SubProfileCount; si++)
-                {
-                    if (_rustService.GetSubProfileMetadata(0, si, out var sinfo) == 0)
-                    {
-                        var subId = RustDataConverter.DecodeGuid(sinfo.Id);
-                        var subName = RustDataConverter.DecodeUtf8(sinfo.Name);
-
-                        var profile = new GameProfile { Id = profileId, Name = profileName };
-                        var subProfile = new SubProfile { Id = subId, Name = subName };
-
-                        return (Success: true, Profile: profile, SubProfile: subProfile);
-                    }
-                }
-            }
-
-            return (Success: false, Profile: null, SubProfile: null);
+            // Return lightweight objects with just the IDs; RefreshProfilesAsync will
+            // match them against the full profile list loaded from Rust.
+            var profile = new GameProfile { Id = profileId };
+            var subProfile = new SubProfile { Id = subProfileId };
+            return (Success: true, Profile: profile, SubProfile: subProfile);
         });
     }
 

@@ -470,6 +470,14 @@ public class RustInteropServiceIpc : IRustInteropService, IDisposable
 
     public uint GetProfileMetadataCount() => SendUintCommand(new IpcCommand { Type = "GetProfileMetadataCount" });
 
+    public (byte[]? ProfileId, byte[]? SubProfileId) GetActiveProfileIds()
+    {
+        var response = SendCommandAsync(new IpcCommand { Type = "GetActiveProfileIds" }).GetAwaiter().GetResult();
+        if (response.Type == "ActiveProfileIds")
+            return (response.ProfileId, response.SubProfileId);
+        return (null, null);
+    }
+
     public int GetProfileMetadata(uint index, out CProfileMetadata metadata)
     {
         var response = SendCommandAsync(new IpcCommand
@@ -754,6 +762,12 @@ public class IpcResponse
 
     [JsonPropertyName("connected")]
     public bool? Connected { get; set; }
+
+    [JsonPropertyName("profile_id")]
+    public byte[]? ProfileId { get; set; }
+
+    [JsonPropertyName("sub_profile_id")]
+    public byte[]? SubProfileId { get; set; }
 
     [JsonIgnore]
     public int? IntValue => Value?.ValueKind == JsonValueKind.Number ? Value?.GetInt32() : null;

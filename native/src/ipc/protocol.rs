@@ -117,6 +117,7 @@ pub enum IpcCommandType {
     // System
     GetVersion,
     GetPerformanceMetrics, // Get detailed system metrics including dependency status
+    GetActiveProfileIds,   // Query which profile/sub-profile is currently active
     ShowUI,                // Request tray to launch the WinUI 3 app
     Shutdown,
 
@@ -177,6 +178,10 @@ pub enum IpcResponseType {
         connected: bool,
     }, // Notification: keyboard connection status changed
     BringToFront, // Notification: bring UI window to foreground
+    ActiveProfileIds {
+        profile_id: Option<[u8; 16]>,
+        sub_profile_id: Option<[u8; 16]>,
+    },
 }
 
 /// Profile metadata structure for IPC

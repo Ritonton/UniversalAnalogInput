@@ -22,9 +22,18 @@ const IDM_SEPARATOR1: u16 = 1002;
 const IDM_TOGGLE_MAPPING: u16 = 1003;
 const IDM_SEPARATOR2: u16 = 1004;
 const IDM_EXIT: u16 = 1005;
+const IDM_SEPARATOR3: u16 = 1006;
 
-// Global menu handle
+// Profile submenu: items use IDs IDM_PROFILE_BASE..IDM_PROFILE_BASE+MAX_PROFILE_ENTRIES-1
+const IDM_PROFILE_BASE: u16 = 2000;
+const MAX_PROFILE_ENTRIES: usize = 50;
+
+// Global menu handles
 static mut G_MENU: HMENU = HMENU(null_mut());
+static mut G_PROFILES_SUBMENU: HMENU = HMENU(null_mut());
+
+// Ordered list of profile UUIDs (16-byte LE) matching the profiles submenu items
+static mut G_PROFILE_IDS: Vec<[u8; 16]> = Vec::new();
 
 // Global window handle for tray operations
 static mut G_HWND: HWND = HWND(null_mut());
@@ -149,6 +158,18 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                 let _ = AppendMenuW(G_MENU, MF_STRING, IDM_SHOW_UI as usize, w!("Show UI"));
                 let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR1 as usize, None);
 
+                // Add profiles submenu
+                build_profiles_submenu();
+                let profiles_label = to_wide("Profiles");
+                let _ = AppendMenuW(
+                    G_MENU,
+                    MF_POPUP,
+                    G_PROFILES_SUBMENU.0 as usize,
+                    PCWSTR(profiles_label.as_ptr()),
+                );
+
+                let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR2 as usize, None);
+
                 // Add toggle mapping item with initial text based on current state
                 let initial_mapping_active =
                     universal_analog_input::api::mappings::is_mapping_active();
@@ -159,7 +180,7 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                 };
                 let _ = AppendMenuW(G_MENU, MF_STRING, IDM_TOGGLE_MAPPING as usize, initial_text);
 
-                let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR2 as usize, None);
+                let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR3 as usize, None);
                 let _ = AppendMenuW(G_MENU, MF_STRING, IDM_EXIT as usize, w!("Exit"));
 
                 LRESULT(0)
@@ -203,9 +224,40 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                 }
             }
 
+            WM_INITMENUPOPUP => {
+                // Refresh profile checkmarks just before the profiles submenu appears
+                let hmenu = HMENU(wparam.0 as *mut _);
+                if hmenu == G_PROFILES_SUBMENU {
+                    refresh_profiles_checkmarks();
+                }
+                DefWindowProcW(hwnd, msg, wparam, lparam)
+            }
+
             WM_COMMAND => {
                 let id = (wparam.0 & 0xFFFF) as u16;
                 match id {
+                    id if id >= IDM_PROFILE_BASE
+                        && (id as usize) < IDM_PROFILE_BASE as usize + MAX_PROFILE_ENTRIES =>
+                    {
+                        let menu_index = (id - IDM_PROFILE_BASE) as usize;
+                        if menu_index < G_PROFILE_IDS.len() {
+                            let id_bytes = G_PROFILE_IDS[menu_index];
+                            info!("[TRAY] Profile switch requested: menu index {}", menu_index);
+                            match universal_analog_input::api::profiles::switch_to_profile_by_id(
+                                id_bytes,
+                            ) {
+                                Ok(_) => {
+                                    info!("[TRAY] Switched to profile at menu index {}", menu_index);
+                                    refresh_profiles_checkmarks();
+                                    update_tooltip_only();
+                                }
+                                Err(e) => {
+                                    error!("[TRAY] Failed to switch profile: {}", e);
+                                }
+                            }
+                        }
+                        LRESULT(0)
+                    }
                     IDM_SHOW_UI => {
                         if G_UI_OPEN {
                             // UI is open, so close it
@@ -283,10 +335,12 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                 };
                 let _ = Shell_NotifyIconW(NIM_DELETE, &mut nid);
 
-                // Destroy menu
+                // Destroy menu (also destroys G_PROFILES_SUBMENU as a child popup)
                 if !G_MENU.0.is_null() {
                     let _ = DestroyMenu(G_MENU);
                     G_MENU = HMENU(null_mut());
+                    G_PROFILES_SUBMENU = HMENU(null_mut());
+                    G_PROFILE_IDS.clear();
                 }
 
                 // Shutdown will be handled by PostQuitMessage below
@@ -406,8 +460,14 @@ fn build_tooltip_text() -> String {
         };
         lines.push(keyboard_status.to_string());
 
-        // Mapping status line (only show if keyboard connected)
+        // Profile and mapping status (only show if keyboard connected)
         if G_KEYBOARD_CONNECTED {
+            if let Some(name) =
+                universal_analog_input::api::profiles::get_active_profile_name()
+            {
+                lines.push(format!("Profile: {}", name));
+            }
+
             let mapping_status = if G_MAPPING_ACTIVE {
                 "Mapping: Active"
             } else {
@@ -549,6 +609,12 @@ fn update_tooltip_only() {
     }
 }
 
+/// Refresh the tooltip after a profile switch triggered from the UI.
+/// Called from tray.rs profile switch callback.
+pub fn update_tooltip_for_profile_switch() {
+    update_tooltip_only();
+}
+
 /// Update mapping engine status and refresh tooltip only (no icon reload)
 /// Called from tray.rs when mapping engine state changes
 pub fn update_mapping_status(active: bool) {
@@ -644,19 +710,120 @@ fn send_shutdown_to_ui() {
     info!("[TRAY_UI] Shutdown notification sent to UI");
 }
 
-/// Rebuild the menu based on UI state
-/// When UI is open: Show "Close UI" only (no mapping toggle)
-/// When UI is closed: Show "Show UI" and "Toggle Mapping"
+/// Populate G_PROFILES_SUBMENU with the current list of profiles.
+/// Assumes G_PROFILES_SUBMENU is already created (not null).
+/// Updates G_PROFILE_IDS with the UUID order used in the menu.
+fn build_profiles_submenu() {
+    unsafe {
+        G_PROFILE_IDS.clear();
+
+        G_PROFILES_SUBMENU = match CreatePopupMenu() {
+            Ok(hmenu) => hmenu,
+            Err(e) => {
+                error!("[TRAY_UI] Failed to create profiles submenu: {}", e);
+                return;
+            }
+        };
+
+        let count =
+            universal_analog_input::api::profiles::get_profile_metadata_count();
+        let active_id =
+            universal_analog_input::api::profiles::get_active_profile_id();
+
+        // Collect all profiles then sort by created_at (same order as the UI)
+        let mut entries: Vec<_> = (0..count.min(MAX_PROFILE_ENTRIES))
+            .filter_map(|i| universal_analog_input::api::profiles::get_profile_metadata(i))
+            .collect();
+        entries.sort_by_key(|m| m.created_at);
+
+        for (menu_idx, meta) in entries.iter().enumerate() {
+            let is_active = active_id.map(|id| id == meta.id).unwrap_or(false);
+            let flags = if is_active {
+                MF_STRING | MF_CHECKED
+            } else {
+                MF_STRING
+            };
+            let name_wide = to_wide(&meta.name);
+            let _ = AppendMenuW(
+                G_PROFILES_SUBMENU,
+                flags,
+                IDM_PROFILE_BASE as usize + menu_idx,
+                PCWSTR(name_wide.as_ptr()),
+            );
+            G_PROFILE_IDS.push(meta.id);
+        }
+
+        if count == 0 {
+            // Show a disabled placeholder when no profiles exist
+            let _ = AppendMenuW(
+                G_PROFILES_SUBMENU,
+                MF_STRING | MF_GRAYED,
+                0,
+                w!("(no profiles)"),
+            );
+        }
+
+        info!("[TRAY_UI] Profiles submenu built - {} profiles", count);
+    }
+}
+
+/// Refresh the checkmarks in the profiles submenu to reflect the current active profile.
+/// Called from WM_INITMENUPOPUP just before the submenu is displayed.
+fn refresh_profiles_checkmarks() {
+    unsafe {
+        if G_PROFILES_SUBMENU.0.is_null() || G_PROFILE_IDS.is_empty() {
+            return;
+        }
+
+        let active_id = universal_analog_input::api::profiles::get_active_profile_id();
+
+        let active_index = active_id
+            .and_then(|id| G_PROFILE_IDS.iter().position(|pid| *pid == id));
+
+        if let Some(idx) = active_index {
+            let _ = CheckMenuRadioItem(
+                G_PROFILES_SUBMENU,
+                IDM_PROFILE_BASE as u32,
+                IDM_PROFILE_BASE as u32 + G_PROFILE_IDS.len() as u32 - 1,
+                IDM_PROFILE_BASE as u32 + idx as u32,
+                MF_BYCOMMAND.0,
+            );
+        } else {
+            // No active profile match — uncheck all
+            for i in 0..G_PROFILE_IDS.len() as u32 {
+                let _ = CheckMenuItem(
+                    G_PROFILES_SUBMENU,
+                    IDM_PROFILE_BASE as u32 + i,
+                    (MF_BYCOMMAND | MF_UNCHECKED).0,
+                );
+            }
+        }
+    }
+}
+
+/// Rebuild the menu based on UI state.
+/// When UI is open: "Close UI", Profiles submenu, "Exit"
+/// When UI is closed: "Show UI", Profiles submenu, "Toggle Mapping", "Exit"
 fn rebuild_menu() {
     unsafe {
         if G_MENU.0.is_null() {
             return;
         }
 
-        // Clear all existing menu items
+        // Remove all items without destroying child submenus so we can reuse them.
+        // We destroy G_PROFILES_SUBMENU manually before recreating it.
         while GetMenuItemCount(Some(G_MENU)) > 0 {
-            let _ = DeleteMenu(G_MENU, 0, MF_BYPOSITION);
+            let _ = RemoveMenu(G_MENU, 0, MF_BYPOSITION);
         }
+
+        // Destroy the old profiles submenu and rebuild it fresh
+        if !G_PROFILES_SUBMENU.0.is_null() {
+            let _ = DestroyMenu(G_PROFILES_SUBMENU);
+            G_PROFILES_SUBMENU = HMENU(null_mut());
+        }
+        build_profiles_submenu();
+
+        let profiles_label = to_wide("Profiles");
 
         if G_UI_OPEN {
             // UI is open - show only "Close UI" and "Exit"
@@ -664,11 +831,17 @@ fn rebuild_menu() {
             let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR1 as usize, None);
             let _ = AppendMenuW(G_MENU, MF_STRING, IDM_EXIT as usize, w!("Exit"));
         } else {
-            // UI is closed - show "Show UI", "Toggle Mapping", and "Exit"
+            // UI is closed - show "Show UI", Profiles, "Toggle Mapping", "Exit"
             let _ = AppendMenuW(G_MENU, MF_STRING, IDM_SHOW_UI as usize, w!("Show UI"));
             let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR1 as usize, None);
+            let _ = AppendMenuW(
+                G_MENU,
+                MF_POPUP,
+                G_PROFILES_SUBMENU.0 as usize,
+                PCWSTR(profiles_label.as_ptr()),
+            );
+            let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR2 as usize, None);
 
-            // Add toggle mapping with appropriate text
             let mapping_text = if G_MAPPING_ACTIVE {
                 w!("Stop Mapping")
             } else {
@@ -676,7 +849,7 @@ fn rebuild_menu() {
             };
             let _ = AppendMenuW(G_MENU, MF_STRING, IDM_TOGGLE_MAPPING as usize, mapping_text);
 
-            let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR2 as usize, None);
+            let _ = AppendMenuW(G_MENU, MF_SEPARATOR, IDM_SEPARATOR3 as usize, None);
             let _ = AppendMenuW(G_MENU, MF_STRING, IDM_EXIT as usize, w!("Exit"));
         }
 

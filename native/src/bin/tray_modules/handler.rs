@@ -96,7 +96,11 @@ impl CommandHandler {
                 let sid = bytes_to_uuid(&sub_profile_id);
 
                 match api::switch_profile(&pid, &sid) {
-                    Ok(_) => IpcResponse::response(message_id, IpcResponseType::Success),
+                    Ok(_) => {
+                        // Notify tray to refresh its tooltip with the new profile name
+                        universal_analog_input::ui_notifier::notify_tray_profile_changed();
+                        IpcResponse::response(message_id, IpcResponseType::Success)
+                    }
                     Err(e) => {
                         IpcResponse::response(message_id, IpcResponseType::Error { message: e })
                     }
@@ -350,6 +354,18 @@ impl CommandHandler {
                 IpcResponse::response(
                     message_id,
                     IpcResponseType::PerformanceMetrics { data: metrics },
+                )
+            }
+
+            IpcCommandType::GetActiveProfileIds => {
+                let profile_id = api::profiles::get_active_profile_id();
+                let sub_profile_id = api::profiles::get_active_sub_profile_id();
+                IpcResponse::response(
+                    message_id,
+                    IpcResponseType::ActiveProfileIds {
+                        profile_id,
+                        sub_profile_id,
+                    },
                 )
             }
 

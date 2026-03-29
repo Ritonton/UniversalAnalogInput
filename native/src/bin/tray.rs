@@ -146,6 +146,12 @@ fn main() {
     });
     info!("[TRAY] Mapping status callback registered");
 
+    // Register profile switch callback for UI-initiated profile switches
+    universal_analog_input::ui_notifier::register_tray_profile_switch_callback(|| {
+        tray_ui::update_tooltip_for_profile_switch();
+    });
+    info!("[TRAY] Profile switch callback registered");
+
     // Check initial keyboard status and update badge
     let initial_status = {
         use universal_analog_input::WOOTING_SDK;

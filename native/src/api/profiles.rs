@@ -406,3 +406,53 @@ pub fn get_gamepad_control_name(index: usize) -> Option<String> {
         .get(index)
         .map(|name| name.to_string())
 }
+
+/// Switch to a profile by its UUID (16-byte LE array), activating its first sub-profile.
+/// Used by the system tray context menu.
+pub fn switch_to_profile_by_id(profile_id_bytes: [u8; 16]) -> Result<(), String> {
+    let profile_id = uuid::Uuid::from_bytes_le(profile_id_bytes);
+
+    let sub_profile_id = {
+        let guard = lock_manager()?;
+        let manager = guard.as_ref().ok_or_else(manager_unavailable)?;
+
+        let mut sub_metas = manager.get_sub_profile_metadata_for_profile(&profile_id);
+        sub_metas.sort_by_key(|s| s.created_at);
+        sub_metas
+            .first()
+            .map(|sub| sub.id)
+            .ok_or_else(|| "Profile has no sub-profiles".to_string())?
+    };
+
+    switch_profile(&profile_id, &sub_profile_id)
+}
+
+/// Return the name of the currently active profile, if any.
+pub fn get_active_profile_name() -> Option<String> {
+    let guard = PROFILE_MANAGER.lock().ok()?;
+    let manager = guard.as_ref()?;
+    let profile_id = manager.get_current_profile_id()?;
+    manager
+        .get_profile_metadata_by_id(&profile_id)
+        .map(|m| m.name.clone())
+}
+
+/// Return the active profile's UUID as a 16-byte little-endian array, if any.
+pub fn get_active_profile_id() -> Option<[u8; 16]> {
+    PROFILE_MANAGER
+        .lock()
+        .ok()?
+        .as_ref()?
+        .get_current_profile_id()
+        .map(|id| id.to_bytes_le())
+}
+
+/// Return the active sub-profile's UUID as a 16-byte little-endian array, if any.
+pub fn get_active_sub_profile_id() -> Option<[u8; 16]> {
+    PROFILE_MANAGER
+        .lock()
+        .ok()?
+        .as_ref()?
+        .get_current_sub_profile_id()
+        .map(|id| id.to_bytes_le())
+}

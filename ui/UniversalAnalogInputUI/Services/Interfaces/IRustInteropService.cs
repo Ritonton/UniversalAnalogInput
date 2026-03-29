@@ -36,6 +36,7 @@ public interface IRustInteropService
     uint GetProfileMetadataCount();
     int GetProfileMetadata(uint index, out CProfileMetadata metadata);
     int GetSubProfileMetadata(uint profileIndex, uint subIndex, out CSubProfileMetadata metadata);
+    (byte[]? ProfileId, byte[]? SubProfileId) GetActiveProfileIds();
 
     uint GetSupportedKeyCount();
     string GetSupportedKeyName(uint index);

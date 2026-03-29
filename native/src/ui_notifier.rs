@@ -15,6 +15,10 @@ static IPC_NOTIFICATION_CALLBACK: Lazy<Mutex<Option<Box<dyn Fn(IpcResponse) + Se
 static TRAY_KEYBOARD_STATUS_CALLBACK: Lazy<Mutex<Option<Box<dyn Fn(bool) + Send + Sync>>>> =
     Lazy::new(|| Mutex::new(None));
 
+// Global tray callback for profile switches (independent of IPC).
+static TRAY_PROFILE_SWITCH_CALLBACK: Lazy<Mutex<Option<Box<dyn Fn() + Send + Sync>>>> =
+    Lazy::new(|| Mutex::new(None));
+
 const UI_EVENT_SUB_PROFILE_SWITCH: u32 = 0;
 
 /// Register a callback for queuing notifications to the IPC server.
@@ -32,6 +36,15 @@ where
     F: Fn(bool) + Send + Sync + 'static,
 {
     let mut cb = TRAY_KEYBOARD_STATUS_CALLBACK.lock().unwrap();
+    *cb = Some(Box::new(callback));
+}
+
+/// Register a callback for tray tooltip refresh on profile switches (independent of IPC).
+pub fn register_tray_profile_switch_callback<F>(callback: F)
+where
+    F: Fn() + Send + Sync + 'static,
+{
+    let mut cb = TRAY_PROFILE_SWITCH_CALLBACK.lock().unwrap();
     *cb = Some(Box::new(callback));
 }
 
@@ -56,6 +69,13 @@ pub fn notify_sub_profile_switch(profile_id: Uuid, sub_profile_id: Uuid) {
     });
 
     send_notification(notification);
+}
+
+/// Notify the tray to refresh its tooltip after a profile switch from the UI.
+pub fn notify_tray_profile_changed() {
+    if let Some(ref callback) = *TRAY_PROFILE_SWITCH_CALLBACK.lock().unwrap() {
+        callback();
+    }
 }
 
 /// Send the current keyboard status to the UI.
