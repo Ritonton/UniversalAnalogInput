@@ -28,6 +28,9 @@ public interface IRustInteropService
     int SuspendHotkeys();
     int ResumeHotkeys();
 
+    bool GetTrayHintEnabled();
+    void SetTrayHintEnabled(bool enabled);
+
     int SetMapping(Guid profileId, Guid subProfileId, ref CMappingInfo mapping);
     int RemoveMapping(Guid profileId, Guid subProfileId, string keyName);
     uint GetCurrentMappingCount();

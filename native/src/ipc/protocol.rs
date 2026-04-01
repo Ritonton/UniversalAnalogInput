@@ -124,6 +124,12 @@ pub enum IpcCommandType {
     // Hotkey Control (suspend when dialogs open)
     SuspendHotkeys,
     ResumeHotkeys,
+
+    // Tray settings, UI communicates with tray_settings.json via IPC, never reads the file directly.
+    GetTraySettings,
+    SetTrayHintEnabled {
+        enabled: bool,
+    },
 }
 
 use crate::api::types::{MappingDto, ProfileMetadataDto, SubProfileMetadataDto};
@@ -181,6 +187,9 @@ pub enum IpcResponseType {
     ActiveProfileIds {
         profile_id: Option<[u8; 16]>,
         sub_profile_id: Option<[u8; 16]>,
+    },
+    TraySettings {
+        show_tray_hint_notification: bool,
     },
 }
 

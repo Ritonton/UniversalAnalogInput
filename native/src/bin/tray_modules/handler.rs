@@ -391,6 +391,21 @@ impl CommandHandler {
                 api::resume_hotkeys();
                 IpcResponse::response(message_id, IpcResponseType::Success)
             }
+
+            IpcCommandType::GetTraySettings => {
+                let s = crate::settings::get();
+                IpcResponse::response(
+                    message_id,
+                    IpcResponseType::TraySettings {
+                        show_tray_hint_notification: s.show_tray_hint_notification,
+                    },
+                )
+            }
+
+            IpcCommandType::SetTrayHintEnabled { enabled } => {
+                crate::settings::set_show_tray_hint_notification(enabled);
+                IpcResponse::response(message_id, IpcResponseType::Success)
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
 use crate::profile::profiles::GamepadControl;
 use arc_swap::ArcSwap;
-use log::{debug, error};
+use log::error;
+#[cfg(debug_assertions)]
+use log::debug;
 use std::sync::{
     atomic::{AtomicBool, AtomicU64, Ordering},
     Arc, Mutex,

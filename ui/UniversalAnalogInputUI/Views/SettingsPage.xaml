@@ -76,6 +76,33 @@
                         Padding="16,12">
                     <StackPanel Spacing="12">
 
+                        <!-- Tray Hint Notification Toggle -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Tray hint notification"
+                                          FontWeight="SemiBold"
+                                          Margin="0,0,0,4"/>
+                                <TextBlock Text="Show a notification the first time the window is minimized to the system tray"
+                                          FontSize="12"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                          TextWrapping="Wrap"/>
+                            </StackPanel>
+
+                            <ToggleSwitch x:Name="ShowTrayHintToggle"
+                                         Grid.Column="1"
+                                         VerticalAlignment="Center"
+                                         Toggled="ShowTrayHintToggle_Toggled"/>
+                        </Grid>
+
+                        <Border Height="1"
+                                Background="{ThemeResource DividerStrokeColorDefaultBrush}"
+                                Margin="0,4"/>
+
                         <!-- Show Debug Tab Toggle -->
                         <Grid>
                             <Grid.ColumnDefinitions>

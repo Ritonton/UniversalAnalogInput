@@ -32,8 +32,12 @@ const MAX_PROFILE_ENTRIES: usize = 50;
 static mut G_MENU: HMENU = HMENU(null_mut());
 static mut G_PROFILES_SUBMENU: HMENU = HMENU(null_mut());
 
-// Ordered list of profile UUIDs (16-byte LE) matching the profiles submenu items
-static mut G_PROFILE_IDS: Vec<[u8; 16]> = Vec::new();
+// Ordered list of profile UUIDs (16-byte LE) matching the profiles submenu items.
+// thread_local because all access is from the single Win32 message loop thread.
+thread_local! {
+    static G_PROFILE_IDS: std::cell::RefCell<Vec<[u8; 16]>> =
+        std::cell::RefCell::new(Vec::new());
+}
 
 // Global window handle for tray operations
 static mut G_HWND: HWND = HWND(null_mut());
@@ -42,6 +46,11 @@ static mut G_HWND: HWND = HWND(null_mut());
 static mut G_KEYBOARD_CONNECTED: bool = true;
 static mut G_MAPPING_ACTIVE: bool = false;
 static mut G_UI_OPEN: bool = false;
+
+// True after the "still running in tray" notification has been shown once this session.
+thread_local! {
+    static G_TRAY_HINT_SHOWN: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
 
 pub struct TrayApp;
 
@@ -240,8 +249,11 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                         && (id as usize) < IDM_PROFILE_BASE as usize + MAX_PROFILE_ENTRIES =>
                     {
                         let menu_index = (id - IDM_PROFILE_BASE) as usize;
-                        if menu_index < G_PROFILE_IDS.len() {
-                            let id_bytes = G_PROFILE_IDS[menu_index];
+                        let id_bytes = G_PROFILE_IDS.with(|ids| {
+                            let ids = ids.borrow();
+                            if menu_index < ids.len() { Some(ids[menu_index]) } else { None }
+                        });
+                        if let Some(id_bytes) = id_bytes {
                             info!("[TRAY] Profile switch requested: menu index {}", menu_index);
                             match universal_analog_input::api::profiles::switch_to_profile_by_id(
                                 id_bytes,
@@ -340,7 +352,7 @@ extern "system" fn wndproc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPARAM)
                     let _ = DestroyMenu(G_MENU);
                     G_MENU = HMENU(null_mut());
                     G_PROFILES_SUBMENU = HMENU(null_mut());
-                    G_PROFILE_IDS.clear();
+                    G_PROFILE_IDS.with(|ids| ids.borrow_mut().clear());
                 }
 
                 // Shutdown will be handled by PostQuitMessage below
@@ -659,7 +671,43 @@ pub fn notify_ui_closed() {
         G_UI_OPEN = false;
         rebuild_menu();
 
+        let already_shown = G_TRAY_HINT_SHOWN.with(|f| f.get());
+        if !already_shown && crate::settings::get().show_tray_hint_notification {
+            G_TRAY_HINT_SHOWN.with(|f| f.set(true));
+            show_tray_hint_notification();
+        }
+
         info!("[TRAY_UI] UI closed - menu updated");
+    }
+}
+
+fn show_tray_hint_notification() {
+    unsafe {
+        if G_HWND.0.is_null() {
+            return;
+        }
+
+        let title = to_wide("Universal Analog Input");
+        let text = to_wide("UAI is still running. Click the tray icon to reopen.\nYou can disable this notification in Settings.");
+
+        let mut nid = NOTIFYICONDATAW {
+            cbSize: size_of::<NOTIFYICONDATAW>() as u32,
+            hWnd: G_HWND,
+            uID: 1,
+            uFlags: NIF_INFO,
+            dwInfoFlags: NIIF_NOSOUND,
+            ..Default::default()
+        };
+
+        for (i, c) in title.iter().enumerate().take(nid.szInfoTitle.len()) {
+            nid.szInfoTitle[i] = *c;
+        }
+        for (i, c) in text.iter().enumerate().take(nid.szInfo.len()) {
+            nid.szInfo[i] = *c;
+        }
+
+        let _ = Shell_NotifyIconW(NIM_MODIFY, &mut nid);
+        info!("[TRAY_UI] Tray hint notification shown");
     }
 }
 
@@ -715,7 +763,7 @@ fn send_shutdown_to_ui() {
 /// Updates G_PROFILE_IDS with the UUID order used in the menu.
 fn build_profiles_submenu() {
     unsafe {
-        G_PROFILE_IDS.clear();
+        G_PROFILE_IDS.with(|ids| ids.borrow_mut().clear());
 
         G_PROFILES_SUBMENU = match CreatePopupMenu() {
             Ok(hmenu) => hmenu,
@@ -750,7 +798,7 @@ fn build_profiles_submenu() {
                 IDM_PROFILE_BASE as usize + menu_idx,
                 PCWSTR(name_wide.as_ptr()),
             );
-            G_PROFILE_IDS.push(meta.id);
+            G_PROFILE_IDS.with(|ids| ids.borrow_mut().push(meta.id));
         }
 
         if count == 0 {
@@ -771,26 +819,29 @@ fn build_profiles_submenu() {
 /// Called from WM_INITMENUPOPUP just before the submenu is displayed.
 fn refresh_profiles_checkmarks() {
     unsafe {
-        if G_PROFILES_SUBMENU.0.is_null() || G_PROFILE_IDS.is_empty() {
+        if G_PROFILES_SUBMENU.0.is_null() || G_PROFILE_IDS.with(|ids| ids.borrow().is_empty()) {
             return;
         }
 
         let active_id = universal_analog_input::api::profiles::get_active_profile_id();
 
-        let active_index = active_id
-            .and_then(|id| G_PROFILE_IDS.iter().position(|pid| *pid == id));
+        let active_index = active_id.and_then(|id| {
+            G_PROFILE_IDS.with(|ids| ids.borrow().iter().position(|pid| *pid == id))
+        });
 
         if let Some(idx) = active_index {
+            let last = G_PROFILE_IDS.with(|ids| ids.borrow().len() as u32) - 1;
             let _ = CheckMenuRadioItem(
                 G_PROFILES_SUBMENU,
                 IDM_PROFILE_BASE as u32,
-                IDM_PROFILE_BASE as u32 + G_PROFILE_IDS.len() as u32 - 1,
+                IDM_PROFILE_BASE as u32 + last,
                 IDM_PROFILE_BASE as u32 + idx as u32,
                 MF_BYCOMMAND.0,
             );
         } else {
             // No active profile match — uncheck all
-            for i in 0..G_PROFILE_IDS.len() as u32 {
+            let count = G_PROFILE_IDS.with(|ids| ids.borrow().len() as u32);
+            for i in 0..count {
                 let _ = CheckMenuItem(
                     G_PROFILES_SUBMENU,
                     IDM_PROFILE_BASE as u32 + i,

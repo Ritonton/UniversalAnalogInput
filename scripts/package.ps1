@@ -82,18 +82,7 @@ if (Test-Path $trayPdbPath) {
     Copy-Item $trayPdbPath $packageDir -Force
 }
 
-# 3. Create profiles folder with default profile
-$profilesDir = Join-Path $packageDir "profiles"
-New-Item -ItemType Directory -Path $profilesDir -Force | Out-Null
-$defaultProfilePath = Join-Path $projectRoot "shared\configs\default_profile.json"
-if (Test-Path $defaultProfilePath) {
-    Copy-Item $defaultProfilePath (Join-Path $profilesDir "default.json") -Force
-    Write-Host "  [OK] Default profile: profiles\default.json" -ForegroundColor Green
-} else {
-    Write-Host "  [INFO] Default profile not found (will be created at runtime)" -ForegroundColor Yellow
-}
-
-# 4. Create README.txt
+# 3. Create README.txt
 $readmePath = Join-Path $packageDir "README.txt"
 $readmeContent = @'
 Universal Analog Input - Analog Keyboard to Gamepad Mapper
@@ -119,7 +108,6 @@ REQUIREMENTS:
 
 FOLDERS:
 - ui/        : WinUI 3 configuration interface and dependencies
-- profiles/  : Default profile template (copied to AppData on first run)
 
 USER DATA LOCATIONS:
 - Profiles: %APPDATA%\UniversalAnalogInput\profiles\
@@ -143,6 +131,4 @@ Write-Host "  |-- README.txt" -ForegroundColor Gray
 Write-Host "  |-- ui\" -ForegroundColor White
 Write-Host "  |   |-- UniversalAnalogInputUI.exe" -ForegroundColor Yellow
 Write-Host "  |   '-- *.dll (WinUI + WindowsAppSDK)" -ForegroundColor Gray
-Write-Host "  '-- profiles\" -ForegroundColor White
-Write-Host "      '-- default.json" -ForegroundColor Gray
 Write-Host "`nThe package can now be zipped and distributed." -ForegroundColor Green

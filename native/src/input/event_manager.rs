@@ -14,7 +14,9 @@ use winapi::um::winuser::{
 
 use crate::conversions::{vk, vk_to_key_name};
 use crate::profile::profiles::HotKey;
-use log::{debug, error, info};
+use log::{error, info};
+#[cfg(debug_assertions)]
+use log::debug;
 
 /// Key event types.
 #[derive(Debug, Clone, Copy, PartialEq)]

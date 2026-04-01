@@ -410,6 +410,24 @@ public class RustInteropServiceIpc : IRustInteropService, IDisposable
     public int SuspendHotkeys() => SendIntCommand(new IpcCommand { Type = "SuspendHotkeys" });
     public int ResumeHotkeys() => SendIntCommand(new IpcCommand { Type = "ResumeHotkeys" });
 
+    public bool GetTrayHintEnabled()
+    {
+        try
+        {
+            var response = SendCommandAsync(new IpcCommand { Type = "GetTraySettings" }).GetAwaiter().GetResult();
+            if (response.Type == "TraySettings")
+                return response.ShowTrayHintNotification ?? true;
+        }
+        catch { }
+        return true; // Default: enabled
+    }
+
+    public void SetTrayHintEnabled(bool enabled)
+    {
+        try { SendIntCommand(new IpcCommand { Type = "SetTrayHintEnabled", Enabled = enabled }); }
+        catch { }
+    }
+
     public int SetMapping(Guid profileId, Guid subProfileId, ref CMappingInfo mapping)
     {
         var mappingInfo = new MappingInfo
@@ -741,6 +759,9 @@ public class IpcCommand
 
     [JsonPropertyName("mapping")]
     public MappingInfo? Mapping { get; set; }
+
+    [JsonPropertyName("enabled")]
+    public bool? Enabled { get; set; }
 }
 
 public class IpcResponse
@@ -762,6 +783,9 @@ public class IpcResponse
 
     [JsonPropertyName("connected")]
     public bool? Connected { get; set; }
+
+    [JsonPropertyName("show_tray_hint_notification")]
+    public bool? ShowTrayHintNotification { get; set; }
 
     [JsonPropertyName("profile_id")]
     public byte[]? ProfileId { get; set; }

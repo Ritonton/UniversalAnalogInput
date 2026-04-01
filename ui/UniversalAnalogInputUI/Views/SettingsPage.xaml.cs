@@ -5,6 +5,7 @@ using UniversalAnalogInputUI.Services.Interfaces;
 using System;
 using System.IO;
 using Windows.ApplicationModel.DataTransfer;
+using System.Threading.Tasks;
 
 namespace UniversalAnalogInputUI.Views
 {
@@ -31,6 +32,8 @@ namespace UniversalAnalogInputUI.Views
             LoadVersion();
 
             _isInitializing = false;
+
+            _ = LoadShowTrayHintSettingAsync(); // async: requires IPC round-trip
         }
 
         private void LoadVersion()
@@ -122,6 +125,38 @@ namespace UniversalAnalogInputUI.Views
                     Enums.ToastType.Info,
                     5000
                 );
+            }
+            catch { }
+        }
+
+        private async Task LoadShowTrayHintSettingAsync()
+        {
+            try
+            {
+                var ipcService = App.Services.GetService(typeof(IRustInteropService)) as IRustInteropService;
+                if (ipcService == null) return;
+
+                bool enabled = await Task.Run(() => ipcService.GetTrayHintEnabled());
+
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    _isInitializing = true;
+                    ShowTrayHintToggle.IsOn = enabled;
+                    _isInitializing = false;
+                });
+            }
+            catch { }
+        }
+
+        private void ShowTrayHintToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (_isInitializing) return;
+
+            bool enabled = ShowTrayHintToggle.IsOn;
+            try
+            {
+                var ipcService = App.Services.GetService(typeof(IRustInteropService)) as IRustInteropService;
+                ipcService?.SetTrayHintEnabled(enabled);
             }
             catch { }
         }

@@ -160,9 +160,6 @@ Source: "..\artifacts\package\UniversalAnalogInput.exe"; DestDir: "{app}"; Flags
 ; UI application and all dependencies
 Source: "..\artifacts\package\ui\*"; DestDir: "{app}\ui"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 
-; Default profile template
-Source: "..\artifacts\package\profiles\*"; DestDir: "{app}\profiles"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
-
 ; Documentation and Legal
 Source: "..\artifacts\package\README.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: core
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion; Components: core

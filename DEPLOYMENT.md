@@ -18,8 +18,6 @@ UniversalAnalogInput/
 │   └── Assets/                       # UI assets
 │       └── shadow.png
 │
-└── profiles/                         # Default profile template
-    └── default.json                  # Copied to AppData on first run
 ```
 
 ## Build Process
@@ -128,7 +126,6 @@ Output: `UniversalAnalogInput-v1.0.0.zip`
 
 **Installation Directory** (e.g., `C:\Program Files\UniversalAnalogInput\`):
 - Core searches for UI in: `./ui/UniversalAnalogInputUI.exe`
-- Default profile template: `./profiles/default.json` (copied to AppData on first run)
 
 **User Data Directory** (`%APPDATA%\UniversalAnalogInput\`):
 - User profiles: `C:\Users\<Username>\AppData\Roaming\UniversalAnalogInput\profiles\*.json`
@@ -236,7 +233,6 @@ The application uses standard Windows directories for user data:
 - Location: User-chosen (e.g., `C:\Program Files\UniversalAnalogInput\`)
 - Contents:
   - Executables and DLLs
-  - `profiles/default.json` - Default profile template (copied to AppData on first run)
 
 ## Version Management
 

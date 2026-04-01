@@ -7,6 +7,8 @@ use log::{error, info};
 
 #[path = "tray_modules/handler.rs"]
 mod handler;
+#[path = "tray_modules/settings.rs"]
+mod settings;
 #[path = "tray_modules/tray_ui.rs"]
 mod tray_ui;
 

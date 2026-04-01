@@ -125,7 +125,7 @@ impl HotkeyManager {
             };
 
             match result {
-                Ok((next_sub_profile_id, sub_profile_name)) => {
+                Ok((next_sub_profile_id, _sub_profile_name)) => {
                     update_systems_after_profile_switch();
                     notify_sub_profile_switch(profile_id, next_sub_profile_id);
 
@@ -140,7 +140,7 @@ impl HotkeyManager {
                             .unwrap_or_else(|| "unknown".to_string());
                         warn!(
                             "[HOTKEY-CALLBACK] Cycle '{}' completed in {:?} -> '{}'",
-                            profile_name, switch_time, sub_profile_name
+                            profile_name, switch_time, _sub_profile_name
                         );
                     }
                 }
@@ -255,11 +255,11 @@ pub fn rebuild_hotkeys_from_metadata() {
     if let Some(ref manager) = *manager_guard {
         let mut event_guard = EVENT_INPUT_MANAGER.lock().unwrap();
         if let Some(ref mut event_manager) = *event_guard {
-            let registered = hotkey_manager.register_from_metadata(manager, event_manager);
+            let _registered = hotkey_manager.register_from_metadata(manager, event_manager);
             #[cfg(debug_assertions)]
             warn!(
                 "[HOTKEY] Rebuilt hotkeys from metadata ({} entries)",
-                registered
+                _registered
             );
         }
     }

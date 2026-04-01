@@ -2,7 +2,7 @@
 
 use super::protocol::{IpcCommand, IpcResponse};
 use super::PIPE_NAME;
-use log::{error, info};
+use log::{debug, error, info};
 use std::sync::{Arc, Mutex};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::windows::named_pipe::{NamedPipeServer as TokioNamedPipeServer, ServerOptions};
@@ -258,13 +258,9 @@ where
 async fn read_message(
     pipe: &mut TokioNamedPipeServer,
 ) -> Result<IpcCommand, Box<dyn std::error::Error>> {
-    info!("[IPC] Waiting to read message length...");
-
     let mut len_buf = [0u8; 4];
     pipe.read_exact(&mut len_buf).await?;
     let len = u32::from_le_bytes(len_buf) as usize;
-
-    info!("[IPC] Message length: {} bytes", len);
 
     if len > MAX_MESSAGE_SIZE {
         return Err(format!("Message too large: {} bytes", len).into());
@@ -273,13 +269,12 @@ async fn read_message(
     let mut payload = vec![0u8; len];
     pipe.read_exact(&mut payload).await?;
 
-    info!(
+    debug!(
         "[IPC] Received payload: {}",
         String::from_utf8_lossy(&payload)
     );
 
     let command = IpcCommand::from_bytes(&payload)?;
-    info!("[IPC] Parsed command: {:?}", command);
     Ok(command)
 }
 
@@ -290,7 +285,7 @@ async fn write_message(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let payload = msg.to_bytes()?;
 
-    info!(
+    debug!(
         "[IPC] Sending response: {} ({} bytes)",
         String::from_utf8_lossy(&payload),
         payload.len()
@@ -302,8 +297,6 @@ async fn write_message(
     pipe.write_all(&payload).await?;
 
     pipe.flush().await?;
-
-    info!("[IPC] Response sent successfully");
 
     Ok(())
 }

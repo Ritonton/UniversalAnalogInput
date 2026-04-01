@@ -7,6 +7,7 @@ pub mod ipc;
 pub mod logging;
 pub mod mapping;
 pub mod profile;
+pub mod settings;
 pub mod ui_notifier;
 pub mod wooting;
 

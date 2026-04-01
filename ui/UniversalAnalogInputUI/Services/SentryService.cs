@@ -86,6 +86,8 @@ public static class SentryService
         {
 #if DEBUG
             Console.WriteLine($"[SENTRY] Failed to initialize: {ex.Message}");
+#else
+            _ = ex;
 #endif
             return false;
         }
