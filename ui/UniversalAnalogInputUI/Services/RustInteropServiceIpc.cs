@@ -410,6 +410,9 @@ public class RustInteropServiceIpc : IRustInteropService, IDisposable
     public int SuspendHotkeys() => SendIntCommand(new IpcCommand { Type = "SuspendHotkeys" });
     public int ResumeHotkeys() => SendIntCommand(new IpcCommand { Type = "ResumeHotkeys" });
 
+    public int StartAnalogStream() => SendIntCommand(new IpcCommand { Type = "StartAnalogStream" });
+    public int StopAnalogStream() => SendIntCommand(new IpcCommand { Type = "StopAnalogStream" });
+
     public bool GetTrayHintEnabled()
     {
         try

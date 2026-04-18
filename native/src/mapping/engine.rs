@@ -240,6 +240,17 @@ impl MappingEngine {
                 }
             };
 
+            // Write to analog stream Memory Mapped File.
+            if crate::analog_stream::ANALOG_STREAM_ACTIVE
+                .load(std::sync::atomic::Ordering::Relaxed)
+            {
+                if let Ok(mut guard) = crate::analog_stream::ANALOG_STREAM_WRITER.try_lock() {
+                    if let Some(ref mut writer) = *guard {
+                        writer.update(&input_buffer);
+                    }
+                }
+            }
+
             if input_success && !input_buffer.is_empty() {
                 let profile_guard = current_profile.load();
 

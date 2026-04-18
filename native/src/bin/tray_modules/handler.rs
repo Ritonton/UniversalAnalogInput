@@ -406,6 +406,21 @@ impl CommandHandler {
                 crate::settings::set_show_tray_hint_notification(enabled);
                 IpcResponse::response(message_id, IpcResponseType::Success)
             }
+
+            IpcCommandType::StartAnalogStream => {
+                match universal_analog_input::analog_stream::start() {
+                    Ok(_) => IpcResponse::response(message_id, IpcResponseType::Success),
+                    Err(e) => IpcResponse::response(
+                        message_id,
+                        IpcResponseType::Error { message: e },
+                    ),
+                }
+            }
+
+            IpcCommandType::StopAnalogStream => {
+                universal_analog_input::analog_stream::stop();
+                IpcResponse::response(message_id, IpcResponseType::Success)
+            }
         }
     }
 }

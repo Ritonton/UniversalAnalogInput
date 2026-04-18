@@ -391,6 +391,7 @@ fn run_ipc_server() {
         }
 
         info!("[IPC] Client disconnected - returning to IDLE state");
+        universal_analog_input::analog_stream::stop();
         server.disconnect();
         IPC_STATE.store(IpcState::Idle as u8, Ordering::Release);
 

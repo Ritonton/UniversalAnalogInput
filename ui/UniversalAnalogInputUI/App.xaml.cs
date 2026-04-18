@@ -118,6 +118,7 @@ public partial class App : Application
         services.AddSingleton<IProfileManagementService, ProfileManagementService>();
         services.AddSingleton<IHotkeyManagementService, HotkeyManagementService>();
         services.AddSingleton<IMappingManagementService, MappingManagementService>();
+        services.AddSingleton<IAnalogStreamService, AnalogStreamService>();
 
         // Main window
         services.AddTransient<MainWindow>();

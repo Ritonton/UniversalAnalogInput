@@ -54,6 +54,7 @@ pub fn start_mapping() -> Result<(), String> {
             match engine.start_mapping(&WOOTING_SDK, &VIGEM_CLIENT) {
                 Ok(_) => {
                     info!("[MAPPING] Mapping loop started (120 FPS)");
+                    crate::analog_stream::resume_if_requested();
                     Ok(())
                 }
                 Err(e) => Err(format!("Failed to start mapping: {}", e)),
@@ -71,6 +72,7 @@ pub fn stop_mapping() -> Result<(), String> {
         .map_err(|e| format!("Lock error: {}", e))?;
     if let Some(ref engine) = *engine_guard {
         engine.stop_mapping();
+        crate::analog_stream::pause();
         debug!("[STOP] Hotkey system remains active for profile management");
     } else {
         warn!("[WARN] Mapping engine not initialized, nothing to stop");

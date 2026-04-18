@@ -7,21 +7,10 @@ pub struct AnalogInput {
     pub analog_value: f64,
 }
 
-/// Aggregate performance metrics returned by the system API.
+/// Component health returned by GetPerformanceMetrics.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PerformanceMetrics {
-    pub system: SystemMetrics,
     pub components: ComponentStatus,
-    pub cache: CacheMetrics,
-}
-
-/// System-level performance data.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SystemMetrics {
-    pub mapping_fps: f64,
-    pub hotkey_detection_hz: f64,
-    pub profile_switch_time_us: u32,
-    pub ultra_performance_mode: bool,
 }
 
 /// Component availability snapshot.
@@ -74,16 +63,6 @@ impl ComponentState {
     pub fn is_healthy(&self) -> bool {
         self.status == InitStatus::Ok
     }
-}
-
-/// Cache metrics for quick diagnostics.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CacheMetrics {
-    pub total_profiles: u32,
-    pub total_sub_profiles: u32,
-    pub current_active: bool,
-    pub memory_usage_kb: u32,
-    pub switch_method: String,
 }
 
 /// UI-facing profile metadata used for IPC.

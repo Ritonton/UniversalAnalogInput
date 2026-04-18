@@ -130,6 +130,10 @@ pub enum IpcCommandType {
     SetTrayHintEnabled {
         enabled: bool,
     },
+
+    // Analog stream, UI signals when CurveConfigurationPage is active.
+    StartAnalogStream,
+    StopAnalogStream,
 }
 
 use crate::api::types::{MappingDto, ProfileMetadataDto, SubProfileMetadataDto};

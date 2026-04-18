@@ -72,6 +72,17 @@ namespace UniversalAnalogInputUI.Views
         private readonly IStatusMonitorService? _statusMonitorService;
         private IMappingManagementService? _mappingService;
 
+        // Analog preview cursor
+        private IAnalogStreamService? _analogStreamService;
+        private IRustInteropService? _rustInteropService;
+        private Line? _cursorLine;
+        private Ellipse? _cursorDot;
+        private TextBlock? _cursorLabel;
+        private double _smoothCx = double.NaN;
+        private string _lastKeyName = string.Empty;
+        private bool _keyboardConnected = true; // optimistic, corrected on first status event
+        private bool _mappingActive = false;
+
         private List<KeyMapping> _selectedMappings = new();
         private bool _isUpdatingFromSelection = false;
 
@@ -94,6 +105,8 @@ namespace UniversalAnalogInputUI.Views
                 _dialogService = App.Services.GetService(typeof(IDialogService)) as IDialogService;
                 _statusMonitorService = App.Services.GetService(typeof(IStatusMonitorService)) as IStatusMonitorService;
                 _mappingService = App.Services.GetService(typeof(IMappingManagementService)) as IMappingManagementService;
+                _analogStreamService = App.Services.GetService(typeof(IAnalogStreamService)) as IAnalogStreamService;
+                _rustInteropService = App.Services.GetService(typeof(IRustInteropService)) as IRustInteropService;
                 _statusMonitorService?.AppendLiveInput("CurveConfigurationPage initialized; services resolved.");
             }
             catch
@@ -124,6 +137,9 @@ namespace UniversalAnalogInputUI.Views
                     _curveOverlayDefaultOpacity = CurveEditorOverlay.Opacity;
                 }
             }
+
+            // Start analog stream for the curve preview cursor.
+            StartAnalogStream();
 
             try
             {
@@ -171,6 +187,9 @@ namespace UniversalAnalogInputUI.Views
         {
             _statusMonitorService?.AppendLiveInput("CurveConfigurationPage unloaded.");
 
+            // Stop analog stream
+            StopAnalogStream();
+
             try
             {
                 var mappingsListControl = MainWindow.Instance?.MappingsListControlInstance;
@@ -183,6 +202,227 @@ namespace UniversalAnalogInputUI.Views
             catch
             {
             }
+        }
+
+        private void StartAnalogStream()
+        {
+            if (_analogStreamService == null || _rustInteropService == null)
+                return;
+
+            try
+            {
+                _mappingActive = _rustInteropService.IsMappingActive();
+                _rustInteropService.KeyboardStatusChanged -= OnKeyboardStatusChanged;
+                _rustInteropService.KeyboardStatusChanged += OnKeyboardStatusChanged;
+
+                _rustInteropService.StartAnalogStream();
+                _analogStreamService.DataUpdated -= OnAnalogDataUpdated;
+                _analogStreamService.DataUpdated += OnAnalogDataUpdated;
+                _analogStreamService.Start();
+
+                UpdateHint();
+            }
+            catch { }
+        }
+
+        private void StopAnalogStream()
+        {
+            if (_analogStreamService == null || _rustInteropService == null)
+                return;
+
+            _rustInteropService.KeyboardStatusChanged -= OnKeyboardStatusChanged;
+            _analogStreamService.DataUpdated -= OnAnalogDataUpdated;
+            _analogStreamService.Stop();
+
+            try { _rustInteropService.StopAnalogStream(); }
+            catch { }
+
+            ClearCursor();
+            if (AnalogStreamHint != null)
+                AnalogStreamHint.Visibility = Visibility.Collapsed;
+        }
+
+        private void OnKeyboardStatusChanged(object? sender, KeyboardStatusEventArgs e)
+        {
+            // IPC background thread, marshal to UI thread.
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                _keyboardConnected = e.IsConnected;
+                if (!e.IsConnected)
+                    ClearCursor();
+                UpdateHint();
+            });
+        }
+
+        private void UpdateHint()
+        {
+            if (AnalogStreamHint == null) return;
+
+            if (!_keyboardConnected)
+            {
+                AnalogStreamHint.Text = "Keyboard not detected.\nConnect your Wooting keyboard.";
+                AnalogStreamHint.Visibility = Visibility.Visible;
+            }
+            else if (!_mappingActive)
+            {
+                AnalogStreamHint.Text = "Start mapping to see\nthe live analog cursor.";
+                AnalogStreamHint.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                AnalogStreamHint.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void OnAnalogDataUpdated(object? sender, AnalogSnapshot snapshot)
+        {
+            if (snapshot.IsStreamStopped)
+            {
+                _mappingActive = false;
+                ClearCursor();
+                UpdateHint();
+            }
+            else
+            {
+                _mappingActive = true;
+                if (AnalogStreamHint != null)
+                    AnalogStreamHint.Visibility = Visibility.Collapsed;
+
+                var top = snapshot.TopKey;
+                if (top != null && top.Value >= 0.001f && !_curveIsMixed)
+                {
+                    _lastKeyName = top.KeyName;
+                    UpdateCursor(top.Value, top.KeyName);
+                }
+                else if (!double.IsNaN(_smoothCx) && !_curveIsMixed)
+                {
+                    UpdateCursor(0f, _lastKeyName); // no key pressed: decay cursor to origin
+                }
+                else
+                {
+                    ClearCursor();
+                }
+            }
+        }
+
+        private void UpdateCursor(float targetInput, string keyName)
+        {
+            if (AnalogCursorCanvas == null
+                || AnalogCursorCanvas.ActualWidth == 0
+                || AnalogCursorCanvas.ActualHeight == 0)
+                return;
+
+            double width  = AnalogCursorCanvas.ActualWidth;
+            double height = AnalogCursorCanvas.ActualHeight;
+            double usableW = width  - 2 * CanvasPadding;
+            double usableH = height - 2 * CanvasPadding;
+
+            // Fallback to 5%/95% when nothing is selected or value is mixed.
+            double innerDZ = (_selectedMappings.Count == 0 || _innerDeadZoneIsMixed) ? 0.05 : _innerDeadZone / 100.0;
+            double outerDZ = (_selectedMappings.Count == 0 || _outerDeadZoneIsMixed) ? 0.95 : _outerDeadZone / 100.0;
+
+            double inputVal;
+            if (targetInput <= innerDZ)
+                inputVal = 0.0;
+            else if (targetInput >= outerDZ)
+                inputVal = 1.0;
+            else
+                inputVal = (targetInput - innerDZ) / (outerDZ - innerDZ);
+
+            // Smooth X only; Y is recomputed from smoothed X so the dot stays on the curve.
+            double targetCx = CanvasPadding + inputVal * usableW;
+            const double Alpha = 0.35;
+            if (double.IsNaN(_smoothCx)) _smoothCx = targetCx;
+            else _smoothCx += (targetCx - _smoothCx) * Alpha;
+
+            double smoothInput = (_smoothCx - CanvasPadding) / usableW;
+            double outputVal = (_sortedPoints.Count >= 2)
+                ? EvaluateCurve(smoothInput, _sortedPoints)
+                : smoothInput;
+
+            if (targetInput == 0f)
+            {
+                if (AnalogCursorCanvas != null)
+                    AnalogCursorCanvas.Opacity = Math.Max(0.0, AnalogCursorCanvas.Opacity - 0.08);
+                if (AnalogCursorCanvas == null || AnalogCursorCanvas.Opacity < 0.05)
+                {
+                    ClearCursor();
+                    return;
+                }
+            }
+            else if (AnalogCursorCanvas != null && AnalogCursorCanvas.Opacity < 1.0)
+            {
+                AnalogCursorCanvas.Opacity = 1.0;
+            }
+
+            // Snap Y to boundary. X only snaps when also near 0 (flat curve at Y=0 keeps X position).
+            if (outputVal < 0.005)
+            {
+                outputVal = 0.0;
+                if (smoothInput < 0.005) smoothInput = 0.0;
+            }
+            else if (outputVal > 0.995) outputVal = 1.0;
+
+            double cx = CanvasPadding + smoothInput * usableW;
+            double cy = height - CanvasPadding - outputVal * usableH;
+
+            if (_cursorLine == null)
+            {
+                var accentColor = (_accentBrush as SolidColorBrush)?.Color ?? Colors.White;
+                var lineBrush = new SolidColorBrush(accentColor) { Opacity = 0.55 };
+                var dotBrush  = new SolidColorBrush(accentColor);
+
+                _cursorLine = new Line
+                {
+                    Stroke           = lineBrush,
+                    StrokeThickness  = 1.5,
+                    IsHitTestVisible = false,
+                };
+                _cursorDot = new Ellipse
+                {
+                    Width  = 10,
+                    Height = 10,
+                    Fill   = dotBrush,
+                    IsHitTestVisible = false,
+                };
+                _cursorLabel = new TextBlock
+                {
+                    FontSize         = 11,
+                    Foreground       = dotBrush,
+                    IsHitTestVisible = false,
+                };
+
+                AnalogCursorCanvas!.Children.Add(_cursorLine!);
+                AnalogCursorCanvas.Children.Add(_cursorDot!);
+                AnalogCursorCanvas.Children.Add(_cursorLabel!);
+            }
+
+            _cursorLine.X1 = CanvasPadding;
+            _cursorLine.Y1 = cy;
+            _cursorLine.X2 = width - CanvasPadding;
+            _cursorLine.Y2 = cy;
+
+            Canvas.SetLeft(_cursorDot, cx - 5);
+            Canvas.SetTop(_cursorDot,  cy - 5);
+
+            if (_cursorLabel != null)
+            {
+                _cursorLabel.Text = $"{keyName}  {outputVal:F2}";
+                Canvas.SetLeft(_cursorLabel, 10);
+                // Lock below the 0.95 position so label doesn't leave the plot area.
+                double cyLock = height - CanvasPadding - 0.95 * usableH;
+                Canvas.SetTop(_cursorLabel, outputVal >= 0.95 ? cyLock - 10 : Math.Max(2, cy - 14));
+            }
+        }
+
+        private void ClearCursor()
+        {
+            if (AnalogCursorCanvas != null) AnalogCursorCanvas.Opacity = 1.0;
+            AnalogCursorCanvas?.Children.Clear();
+            _cursorLine  = null;
+            _cursorDot   = null;
+            _cursorLabel = null;
+            _smoothCx    = double.NaN;
         }
 
         private void OnMappingSelectionChanged(object? sender, IEnumerable<KeyMapping> selectedMappings)

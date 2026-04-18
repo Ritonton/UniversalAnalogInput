@@ -6,6 +6,8 @@ namespace UniversalAnalogInputUI.Services.Interfaces;
 /// <summary>Provides a testable abstraction over P/Invoke calls to the Rust library.</summary>
 public interface IRustInteropService
 {
+    event EventHandler<KeyboardStatusEventArgs>? KeyboardStatusChanged;
+
     void Cleanup();
     string GetVersion();
 
@@ -55,4 +57,7 @@ public interface IRustInteropService
     bool NextUiEvent(out CUiEvent evt);
 
     Models.PerformanceMetrics? GetPerformanceMetrics();
+
+    int StartAnalogStream();
+    int StopAnalogStream();
 }

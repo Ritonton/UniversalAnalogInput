@@ -1,3 +1,4 @@
+pub mod analog_stream;
 pub mod api;
 pub mod conversions;
 pub mod curves;
@@ -331,6 +332,8 @@ pub fn cleanup_internal() {
             client.cleanup();
         }
     }
+
+    analog_stream::cleanup();
 
     // Shutdown Sentry
     logging::shutdown_sentry();

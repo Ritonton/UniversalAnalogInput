@@ -184,6 +184,23 @@
                                         RightTapped="Canvas_RightTapped"
                                         SizeChanged="CurvePreviewCanvas_SizeChanged"/>
 
+                                <!-- Separate canvas so RedrawCurve() doesn't clear the cursor. -->
+                                <Canvas x:Name="AnalogCursorCanvas"
+                                        Background="Transparent"
+                                        IsHitTestVisible="False"/>
+
+                                <TextBlock x:Name="AnalogStreamHint"
+                                           IsHitTestVisible="False"
+                                           Visibility="Collapsed"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource SubtleForegroundBrush}"
+                                           Opacity="0.6"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="220"/>
+
                                 <Grid IsHitTestVisible="False" Margin="5">
                                     <TextBlock Text="Input →"
                                             HorizontalAlignment="Right"
