@@ -40,17 +40,7 @@ Universal Analog Input bridges the gap between analog keyboards and games that d
 
 Most games treat keyboard input as binary (pressed or not pressed), resulting in all-or-nothing movement. In racing games, for example, pressing a key means full acceleration or full steering, there's no in-between. With analog keyboards, you can press keys partially, but most games don't recognize this capability.
 
-Universal Analog Input solves this problem by converting your analog keyboard input into gamepad controls that games understand. Now you get:
-
-- **Smooth, Proportional Control**: Press a key halfway for half acceleration or gentle steering, just like a controller analog stick
-- **Perfect for Racing Games**: Fine control over steering and throttle without the all-or-nothing keyboard behavior
-- **Fluid Movement**: In any game, control your character's speed and direction with precision
-- **Full Customization**: Map any analog key to any gamepad control (sticks, triggers, buttons)
-- **Game Profiles**: Create separate configurations for each game you play
-- **Sub-Profiles**: Within each game, create different mapping sets for different situations (e.g., driving vs. walking, flight vs. ground combat)
-- **Response Curves**: Fine-tune input response with linear or custom curves to match your play style
-- **Hotkey Switching**: Instantly switch between sub-profiles during gameplay
-- **Universal Compatibility**: Works with any analog keyboard supported by the Wooting Analog SDK plugin system
+Universal Analog Input solves this by converting analog keyboard input into virtual gamepad controls — giving you smooth, proportional movement in any game that supports controllers. See [Features](#features) for the full list of capabilities.
 
 <br/>
 
