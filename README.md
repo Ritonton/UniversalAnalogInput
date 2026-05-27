@@ -29,6 +29,9 @@
   <img src="https://img.shields.io/badge/UI-WinUI%203-0078d4?style=for-the-badge&logo=microsoft&logoColor=white" alt="WinUI 3" />
 </p>
 
+> [!WARNING]
+> **My keyboard isn't in the compatibility list?** See [Keyboard Compatibility](#keyboard-compatibility).
+
 > [!TIP]
 > **Don't have an analog keyboard?** See [Keyboard Sim](#no-analog-keyboard) to simulate analog input with a regular keyboard and mouse.
 
@@ -441,7 +444,7 @@ Contributions are welcome! Here's how you can help:
 3. **Keep it simple**
    - Write clean, readable code
    - Avoid unnecessary complexity
-
+<a name="keyboard-compatibility"></a>
 ### Pull Request Process
 
 1. Fork the repository
@@ -453,6 +456,11 @@ Contributions are welcome! Here's how you can help:
 <br/>
 
 ## Compatible Hardware
+
+> [!WARNING]
+> Universal Analog Input does not communicate directly with keyboards.
+> Keyboard compatibility is provided through the [Universal Analog Plugin](https://github.com/AnalogSense/universal-analog-plugin) ecosystem by AnalogSense and the Wooting Analog SDK.
+> **If your keyboard is unsupported, please submit a compatibility request to the Universal Analog Plugin repository first.**
 
 Universal Analog Input works with two categories of devices depending on whether the [Universal Analog Plugin](https://github.com/AnalogSense/universal-analog-plugin) by AnalogSense is installed.
 
